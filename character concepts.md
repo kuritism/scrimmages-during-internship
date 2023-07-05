@@ -13,7 +13,8 @@
 *Jump right*  
 *Attack left*  
 *Attack right*  
-
+*Ability left*  
+*Ability right*  
 
 # Hatsune Miku
  *Average*  
