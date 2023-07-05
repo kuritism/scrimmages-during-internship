@@ -23,3 +23,5 @@
  *Hair Whip(attacks the enemy using her hair)*  
  *Veggie Juice(Heals herself for 10% of her HP) 30 Second Cooldown*  
  *World is Mine(Performs a concert, creating an explosion around a large area dealing tonna damage)*   
+
+# Bingo
