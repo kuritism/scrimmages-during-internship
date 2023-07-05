@@ -9,12 +9,11 @@
 # Files Needed
 *Face left*  
 *Face right*  
-*Jump left*  
-*Jump right*  
 *Attack left*  
 *Attack right*  
 *Ability left*  
 *Ability right*  
+*Ultimate*  
 
 # Hatsune Miku
  *Average*  
