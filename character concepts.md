@@ -7,6 +7,7 @@
  *Ability*  
  *Ultimate*   
 # Files Needed
+*Mini icon*  
 *Face left*  
 *Face right*  
 *Attack left*  
