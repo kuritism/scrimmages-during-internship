@@ -6,6 +6,14 @@
  *Basic Attack*  
  *Ability*  
  *Ultimate*   
+# Files Needed
+*Face left*  
+*Face right*  
+*Jump left*  
+*Jump right*  
+*Attack left*  
+*Attack right*  
+
 
 # Hatsune Miku
  *Average*  
