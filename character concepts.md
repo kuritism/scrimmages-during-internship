@@ -1,5 +1,5 @@
 # Format
- *Name*
+ *Name* \n
  *Class*
  *Difficulty*
  *Passive*
