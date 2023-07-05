@@ -26,3 +26,4 @@
 
 # Bingo
 # Cirno Fumo
+# Petticoat
