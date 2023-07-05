@@ -25,3 +25,4 @@
  *World is Mine(Performs a concert, creating an explosion around a large area dealing tonna damage)*   
 
 # Bingo
+# Cirno Fumo
