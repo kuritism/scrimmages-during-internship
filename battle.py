@@ -1,8 +1,10 @@
 import cv2
 import pygame, sys, time, random
+from pygame import mixer
+from tinytag import TinyTag
 
 pygame.init()
-
+mixer.init
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -104,6 +106,10 @@ success, bg_image = bg.read()
 bg_fps = bg.get(cv2.CAP_PROP_FPS)
 bg_clock = pygame.time.Clock()
 
+# Pick music
+mixer.music.load("audio/BGM/" + str(random.randint(1, 1)) + ".mp3")
+mixer.music.set_volume(0.7)
+
 # Main game loop
 running = True
 
@@ -111,6 +117,10 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+    # Play Music
+
+    mixer.music.play(-1)
 
     # Play Background
     bg_clock.tick(bg_fps)
