@@ -10,8 +10,6 @@ WINDOW_HEIGHT = 720
 display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Scrimmage During Internship")
 
-
-
 FPS = 60
 clock = pygame.time.Clock()
 
@@ -34,61 +32,45 @@ class Game():
 
 class players(pygame.sprite.Sprite):
 
-
-
     def __init__(self):
         """Initialize the player"""
         super().__init__()
         self.DEFAULT_IMAGE_SIZE = (160, 160)
-        self.image = pygame.transform.scale(pygame.image.load("Characters/bingo/bing_Face_Right.png"), self.DEFAULT_IMAGE_SIZE)
+        self.image = pygame.transform.scale(pygame.image.load("scrimmaging/characters/bingo/sprites/bing_Face_Right.png"), self.DEFAULT_IMAGE_SIZE)
         self.rect = self.image.get_rect()
         self.rect.centerx = WINDOW_WIDTH / 2
         self.rect.bottom = WINDOW_HEIGHT
-
-
-        self.velocity = 8
+        self.yvelocity = 8
+        self.xvelocity = 6
+        self.m = 1
+        self.is_jump = False
 
     def update(self):
         """Update the player"""
-        a = 0
-
         keys = pygame.key.get_pressed()
 
         # Move the player within the bounds of the screen
         if keys[pygame.K_LEFT] and self.rect.left > 0:
-            self.rect.x -= self.velocity
+            self.rect.x -= self.xvelocity
         if keys[pygame.K_RIGHT] and self.rect.right < WINDOW_WIDTH:
-            self.rect.x += self.velocity
+            self.rect.x += self.xvelocity
         if keys[pygame.K_UP] and self.rect.bottom == WINDOW_HEIGHT:
-            """JUMPSTART = int(round(time.time()*1000))
-            JUMP = True
-            while JUMP == True:
+            self.is_jump = True
 
-                TIMEPASSED = int(round(time.time()*1000)) - JUMPSTART
-                if TIMEPASSED <= 2000:
-                    self.rect.y -= 1
-                if TIMEPASSED == 2:
-                    JUMP = False"""
-            
-            last_time_ms = int(round(time.time() * 1000))
-            while a <= 3:
-                diff_time_ms = int(round(time.time() * 1000)) - last_time_ms
-                if diff_time_ms >= 1000:
-                    a += 1
-                    last_time_ms = int(round(time.time() * 1000))
-                
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        pygame.quit()
+        if self.is_jump:
+            F = (1 / 2) * self.m * (self.yvelocity ** 2)
+            self.rect.y -= F
+            self.yvelocity -= 1
+            print(self.yvelocity)
+            if self.yvelocity < 0:
+                self.m = -1
+            if self.rect.bottom >= WINDOW_HEIGHT:
+                self.is_jump = False
+                self.yvelocity = 8
+                self.rect.bottom = WINDOW_HEIGHT
+                self.m = 1
 
-                # display_surface.blit(pygame.image.load(images[a]).convert(),(0,0))
-                #display_surface.blit(pygame.image.load("bing_Face_Right.png").convert(), (0, 0))
-
-                display_surface.fill((20, 175, 175))
-                print(a)
-                my_player_group.update()
-                my_player_group.draw(display_surface)
-                pygame.display.update()
+        pygame.time.delay(10)
 
 
 class arena():
@@ -107,13 +89,12 @@ bg_fps = bg.get(cv2.CAP_PROP_FPS)
 bg_clock = pygame.time.Clock()
 
 # Pick music
-bgm = "audio/BGM/" + str(random.randint(1, 1)) + ".mp3"
+bgm = "audio/BGM/1.mp3"
 mixer.music.load(bgm)
 mixer.music.set_volume(1)
 mixer.music.play(-1)
 song_name = TinyTag.get(bgm)
 print("Title: " + song_name.title)
-
 
 # Main game loop
 running = True
@@ -125,15 +106,11 @@ while running:
 
     # Play Music
 
-
-
     # Play Background
     bg_clock.tick(bg_fps)
     success, bg_image = bg.read()
 
     bg_surf = pygame.image.frombuffer(bg_image.tobytes(), bg_image.shape[1::-1], "BGR")
-
-
 
     # Blit background
     display_surface.blit(bg_surf, (160, 0))
