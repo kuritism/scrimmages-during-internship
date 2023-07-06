@@ -1,4 +1,5 @@
-import pygame, sys, time
+import cv2
+import pygame, sys, time, random
 
 pygame.init()
 
@@ -37,7 +38,7 @@ class players(pygame.sprite.Sprite):
         """Initialize the player"""
         super().__init__()
         self.DEFAULT_IMAGE_SIZE = (160, 160)
-        self.image = pygame.transform.scale(pygame.image.load("bing_Face_Right.png"), self.DEFAULT_IMAGE_SIZE)
+        self.image = pygame.transform.scale(pygame.image.load("Characters/bingo/bing_Face_Right.png"), self.DEFAULT_IMAGE_SIZE)
         self.rect = self.image.get_rect()
         self.rect.centerx = WINDOW_WIDTH / 2
         self.rect.bottom = WINDOW_HEIGHT
@@ -97,15 +98,30 @@ my_player_group = pygame.sprite.Group()
 my_player = players()
 my_player_group.add(my_player)
 
+# Pick background
+bg = cv2.VideoCapture("Assets/Backgrounds/" + str(random.randint(1, 1)) + ".mp4")
+success, bg_image = bg.read()
+bg_fps = bg.get(cv2.CAP_PROP_FPS)
+bg_clock = pygame.time.Clock()
+
 # Main game loop
 running = True
+
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
+    # Play Background
+    bg_clock.tick(bg_fps)
+    success, bg_image = bg.read()
+
+    bg_surf = pygame.image.frombuffer(bg_image.tobytes(), bg_image.shape[1::-1], "BGR")
+
+
+
     # Blit background
-    display_surface.fill((20, 175, 175))
+    display_surface.blit(bg_surf, (160, 0))
 
     # Blit text
 
