@@ -4,7 +4,7 @@ from pygame import mixer
 from tinytag import TinyTag
 
 pygame.init()
-mixer.init
+mixer.init()
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -107,8 +107,13 @@ bg_fps = bg.get(cv2.CAP_PROP_FPS)
 bg_clock = pygame.time.Clock()
 
 # Pick music
-mixer.music.load("audio/BGM/" + str(random.randint(1, 1)) + ".mp3")
-mixer.music.set_volume(0.7)
+bgm = "audio/BGM/" + str(random.randint(1, 1)) + ".mp3"
+mixer.music.load(bgm)
+mixer.music.set_volume(1)
+mixer.music.play(-1)
+song_name = TinyTag.get(bgm)
+print("Title: " + song_name.title)
+
 
 # Main game loop
 running = True
@@ -120,7 +125,7 @@ while running:
 
     # Play Music
 
-    mixer.music.play(-1)
+
 
     # Play Background
     bg_clock.tick(bg_fps)
