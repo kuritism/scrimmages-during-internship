@@ -4,14 +4,15 @@ from pygame import mixer, font
 from tinytag import TinyTag
 from hollow import textOutline
 
-
 pygame.init()
 mixer.init()
 font.init()
 
-WINDOW_WIDTH =1920
-WINDOW_HEIGHT = 1080
-display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT),)
+display_info = pygame.display.Info()
+
+WINDOW_WIDTH = display_info.current_w
+WINDOW_HEIGHT = display_info.current_h
+display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), )
 pygame.display.set_caption("Scrimmage During Internship")
 
 FPS = 60
@@ -103,21 +104,20 @@ success, bg_image = bg.read()
 # Pick music (ui)
 bgm = "audio/BGM/1.mp3"
 now_playing_bg = pygame.image.load('Assets/UI/now playing.png')
+now_playing_bg = pygame.transform.scale(now_playing_bg, (WINDOW_WIDTH / 4, WINDOW_HEIGHT / 4))
 mixer.music.load(bgm)
 mixer.music.set_volume(1)
 mixer.music.play(-1)
 song_name = TinyTag.get(bgm)
 print("Title: " + song_name.title)
-song_font  = font.Font("Assets/fonts/minecraft_font.ttf", 24)
+song_font = font.Font("Assets/fonts/minecraft_font.ttf", 24)
 song_title = "Now Playing: " + song_name.title
-song_text = song_font.render(str(song_title),True, (0, 0, 0))
-now_playing = textOutline(song_font, song_title, (0,0,0), (255,255,255))
+song_text = song_font.render(str(song_title), True, (0, 0, 0))
+now_playing = textOutline(song_font, song_title, (0, 0, 0), (255, 255, 255))
 songRect = now_playing.get_rect()
-songbgRect =now_playing_bg .get_rect()
-songRect.topright = (WINDOW_WIDTH,0)
-songbgRect.topright = (WINDOW_WIDTH,0)
-
-
+songbgRect = now_playing_bg.get_rect()
+songRect.topright = (WINDOW_WIDTH, 0)
+songbgRect.topright = (WINDOW_WIDTH, 0)
 
 # Create a player group and player object
 my_player_group = pygame.sprite.Group()
@@ -131,17 +131,16 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-
-
     # Play Background
 
     success, bg_image = bg.read()
 
-    bg_surf =  pygame.transform.scale (pygame.image.frombuffer(bg_image.tobytes(), bg_image.shape[1::-1], "BGR"),(WINDOW_WIDTH,WINDOW_HEIGHT))
+    bg_surf = pygame.transform.scale(pygame.image.frombuffer(bg_image.tobytes(), bg_image.shape[1::-1], "BGR"),
+                                     (WINDOW_WIDTH, WINDOW_HEIGHT))
 
     # Blit background
     display_surface.fill((20, 175, 175))
-    display_surface.blit(bg_surf, (0,0))
+    display_surface.blit(bg_surf, (0, 0))
 
     # Blit Song title
     display_surface.blit(now_playing_bg, songbgRect)
