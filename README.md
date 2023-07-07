@@ -1,4 +1,6 @@
 # scrimmages-during-internship
+2d Fighting name made in PyGame!!!!!
+Will feature many skrunklies
 
 # TO DO
 use socket for multiplayer !!!!  
