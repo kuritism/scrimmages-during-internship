@@ -2,6 +2,7 @@ import cv2
 import pygame, sys, time, random
 from pygame import mixer, font
 from tinytag import TinyTag
+from hollow import textOutline
 
 
 pygame.init()
@@ -108,7 +109,8 @@ song_name = TinyTag.get(bgm)
 print("Title: " + song_name.title)
 song_font  = font.Font("Assets/fonts/minecraft_font.ttf", 24)
 song_title = "Now Playing: " + song_name.title
-now_playing = song_font.render(str(song_title),True, (0, 0, 0))
+song_text = song_font.render(str(song_title),True, (0, 0, 0))
+now_playing = textOutline(song_font, song_title, (0,0,0), (255,255,255))
 songRect = now_playing.get_rect()
 songRect.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
 
