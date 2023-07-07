@@ -1,8 +1,10 @@
 # scrimmages-during-internship
 
-
-use socket !!!!  
+#TO DO
+use socket for multiplayer !!!!  
 pygame.clock PLS
+Find a solution to program crashing after background video finishes(loop?)
+
 
 
 # Development Prospects
