@@ -102,6 +102,7 @@ success, bg_image = bg.read()
 
 # Pick music (ui)
 bgm = "audio/BGM/1.mp3"
+now_playing_bg = pygame.image.load('Assets/UI/now playing.png')
 mixer.music.load(bgm)
 mixer.music.set_volume(1)
 mixer.music.play(-1)
@@ -112,7 +113,11 @@ song_title = "Now Playing: " + song_name.title
 song_text = song_font.render(str(song_title),True, (0, 0, 0))
 now_playing = textOutline(song_font, song_title, (0,0,0), (255,255,255))
 songRect = now_playing.get_rect()
-songRect.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
+songbgRect =now_playing_bg .get_rect()
+songRect.topright = (WINDOW_WIDTH,0)
+songbgRect.topright = (WINDOW_WIDTH,0)
+
+
 
 # Create a player group and player object
 my_player_group = pygame.sprite.Group()
@@ -139,6 +144,7 @@ while running:
     display_surface.blit(bg_surf, (0,0))
 
     # Blit Song title
+    display_surface.blit(now_playing_bg, songbgRect)
     display_surface.blit(song_text, songRect)
     display_surface.blit(now_playing, songRect)
 
