@@ -1,6 +1,10 @@
-import pygame, sys, time
+import cv2
+import pygame, sys, time, random
+from pygame import mixer
+from tinytag import TinyTag
 
 pygame.init()
+mixer.init()
 
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
@@ -33,8 +37,10 @@ class players(pygame.sprite.Sprite):
         """Initialize the player"""
         super().__init__()
         self.DEFAULT_IMAGE_SIZE = (160, 160)
-        self.rightimage = pygame.transform.scale(pygame.image.load("scrimmaging/characters/bingo/sprites/bing_Face_Right.png"), self.DEFAULT_IMAGE_SIZE)
-        self.leftimage = pygame.transform.scale(pygame.image.load("scrimmaging/characters/bingo/sprites/bingo_Face_Left.png"), self.DEFAULT_IMAGE_SIZE)
+        self.rightimage = pygame.transform.scale(pygame.image.load("characters/bingo/sprites/bing_Face_Right.png"),
+                                                 self.DEFAULT_IMAGE_SIZE)
+        self.leftimage = pygame.transform.scale(pygame.image.load("characters/bingo/sprites/bingo_Face_Left.png"),
+                                                self.DEFAULT_IMAGE_SIZE)
         self.image = self.rightimage
         self.rect = self.image.get_rect()
         self.rect.centerx = WINDOW_WIDTH / 2
@@ -82,9 +88,22 @@ class players(pygame.sprite.Sprite):
             self.crouching = False
         self.rect.x += self.xvelocity
 
+
 class arena():
     pass
 
+
+# Pick background
+bg = cv2.VideoCapture("Assets/Backgrounds/" + str(random.randint(1, 1)) + ".mp4")
+success, bg_image = bg.read()
+
+# Pick music
+bgm = "audio/BGM/1.mp3"
+mixer.music.load(bgm)
+mixer.music.set_volume(1)
+mixer.music.play(-1)
+song_name = TinyTag.get(bgm)
+print("Title: " + song_name.title)
 
 # Create a player group and player object
 my_player_group = pygame.sprite.Group()
@@ -98,8 +117,15 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+    # Play Background
+
+    success, bg_image = bg.read()
+
+    bg_surf = pygame.image.frombuffer(bg_image.tobytes(), bg_image.shape[1::-1], "BGR")
+
     # Blit background
     display_surface.fill((20, 175, 175))
+    display_surface.blit(bg_surf, (160, 0))
 
     # Blit text
 
