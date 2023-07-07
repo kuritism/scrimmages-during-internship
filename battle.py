@@ -9,8 +9,8 @@ pygame.init()
 mixer.init()
 font.init()
 
-WINDOW_WIDTH = 1280
-WINDOW_HEIGHT = 720
+WINDOW_WIDTH = 1920
+WINDOW_HEIGHT = 1080
 display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Scrimmage During Internship")
 
@@ -136,9 +136,10 @@ while running:
 
     # Blit background
     display_surface.fill((20, 175, 175))
-    display_surface.blit(bg_surf, (160, 0))
+    display_surface.blit(bg_surf, (WINDOW_WIDTH//4,WINDOW_HEIGHT//4))
 
-    # Blit Song
+    # Blit Song title
+    display_surface.blit(song_text, songRect)
     display_surface.blit(now_playing, songRect)
 
     # Update
