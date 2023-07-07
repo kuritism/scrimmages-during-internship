@@ -37,7 +37,7 @@ class players(pygame.sprite.Sprite):
         """Initialize the player"""
         super().__init__()
         self.DEFAULT_IMAGE_SIZE = (160, 160)
-        self.rightimage = pygame.transform.scale(pygame.image.load("characters/bingo/sprites/bing_Face_Right.png"),
+        self.rightimage = pygame.transform.scale(pygame.image.load("characters/bingo/sprites/bingo_Face_Right.png"),
                                                  self.DEFAULT_IMAGE_SIZE)
         self.leftimage = pygame.transform.scale(pygame.image.load("characters/bingo/sprites/bingo_Face_Left.png"),
                                                 self.DEFAULT_IMAGE_SIZE)
