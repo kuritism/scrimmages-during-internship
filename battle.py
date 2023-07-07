@@ -1,10 +1,12 @@
 import cv2
 import pygame, sys, time, random
-from pygame import mixer
+from pygame import mixer, font
 from tinytag import TinyTag
+
 
 pygame.init()
 mixer.init()
+font.init()
 
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
@@ -97,13 +99,18 @@ class arena():
 bg = cv2.VideoCapture("Assets/Backgrounds/" + str(random.randint(1, 1)) + ".mp4")
 success, bg_image = bg.read()
 
-# Pick music
+# Pick music (ui)
 bgm = "audio/BGM/1.mp3"
 mixer.music.load(bgm)
 mixer.music.set_volume(1)
 mixer.music.play(-1)
 song_name = TinyTag.get(bgm)
 print("Title: " + song_name.title)
+song_font  = font.Font("Assets/fonts/minecraft_font.ttf", 24)
+song_title = "Now Playing: " + song_name.title
+now_playing = song_font.render(str(song_title),True, (0, 0, 0))
+songRect = now_playing.get_rect()
+songRect.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
 
 # Create a player group and player object
 my_player_group = pygame.sprite.Group()
@@ -117,6 +124,8 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+
+
     # Play Background
 
     success, bg_image = bg.read()
@@ -127,7 +136,8 @@ while running:
     display_surface.fill((20, 175, 175))
     display_surface.blit(bg_surf, (160, 0))
 
-    # Blit text
+    # Blit Song
+    display_surface.blit(now_playing, songRect)
 
     # Update
 
