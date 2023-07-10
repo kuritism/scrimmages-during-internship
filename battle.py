@@ -1,7 +1,9 @@
 import cv2
-import pygame, sys, time, random
+import pygame
+import random
 from pygame import mixer, font
 from tinytag import TinyTag
+
 from hollow import textOutline
 
 pygame.init()
@@ -62,15 +64,15 @@ class players(pygame.sprite.Sprite):
         self.xvelocity = 0
 
         # Move the player within the bounds of the screen
-        if keys[pygame.K_LEFT] and self.rect.left > 0:
+        if keys[pygame.K_a] and self.rect.left > 0:
             self.xvelocity = -6
             self.image = self.leftimage
-        if keys[pygame.K_RIGHT] and self.rect.right < WINDOW_WIDTH:
+        if keys[pygame.K_d] and self.rect.right < WINDOW_WIDTH:
             self.xvelocity = 6
             self.image = self.rightimage
-        if keys[pygame.K_UP] and self.rect.bottom == WINDOW_HEIGHT:
+        if keys[pygame.K_SPACE] or keys[pygame.K_w] and self.rect.bottom == WINDOW_HEIGHT:
             self.is_jump = True
-        if keys[pygame.K_DOWN] and not self.is_jump:
+        if keys[pygame.K_s] and not self.is_jump:
             self.crouching = True
 
         if self.is_jump:
