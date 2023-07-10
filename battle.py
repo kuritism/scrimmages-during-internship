@@ -1,17 +1,20 @@
+## SCRIMMAGE DURING INTERNSHIP ##
+
+# Imports
 import cv2
 import pygame
 import random
 from pygame import mixer, font
 from tinytag import TinyTag
-
 from hollow import textOutline
 
+# Initialize
 pygame.init()
 mixer.init()
 font.init()
 
+# Create fullscreen window
 display_info = pygame.display.Info()
-
 WINDOW_WIDTH = display_info.current_w
 WINDOW_HEIGHT = display_info.current_h
 display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), )
@@ -21,11 +24,13 @@ FPS = 60
 clock = pygame.time.Clock()
 
 
+## CLASSES ##
+
 class Game():
 
     def __init__(self, player):
         """Initialize the game"""
-        self.player = my_player
+        self.player = player
         self.frame_count = 0
         self.round_time = 0
 
@@ -39,17 +44,18 @@ class Game():
 
 class players(pygame.sprite.Sprite):
 
-    def __init__(self, jump, moveleft, moveright, crouch, spawn):
+    def __init__(self, jump, moveleft, moveright, crouch, spawn, character):
         """Initialize the player"""
         super().__init__()
         self.DEFAULT_IMAGE_SIZE = (160, 160)
-        self.rightimage = pygame.transform.scale(pygame.image.load("characters/bingo/sprites/bingo_Face_Right.png"),
-                                                 self.DEFAULT_IMAGE_SIZE)
-        self.leftimage = pygame.transform.scale(pygame.image.load("characters/bingo/sprites/bingo_Face_Left.png"),
+        self.rightimage = pygame.transform.scale(
+            pygame.image.load("Characters/" + character + "/sprites/" + character + "_Face_Right.png"),
+            self.DEFAULT_IMAGE_SIZE)
+        self.leftimage = pygame.transform.scale(pygame.image.load("Characters/bingo/sprites/bingo_Face_Left.png"),
                                                 self.DEFAULT_IMAGE_SIZE)
         self.image = self.rightimage
         self.rect = self.image.get_rect()
-        self.rect.centerx = WINDOW_WIDTH / 2
+        self.rect.centerx = spawn
         self.rect.bottom = WINDOW_HEIGHT
         self.yvelocity = 8
         self.xvelocity = 0
@@ -61,7 +67,6 @@ class players(pygame.sprite.Sprite):
         self.MOVELEFT = moveleft
         self.MOVERIGHT = moveright
         self.CROUCH = crouch
-
 
     def update(self):
         """Update the player"""
@@ -109,7 +114,7 @@ bg = cv2.VideoCapture("Assets/Backgrounds/" + str(random.randint(1, 1)) + ".mp4"
 success, bg_image = bg.read()
 
 # Pick music (ui)
-bgm = "audio/BGM/1.mp3"
+bgm = "Audio/BGM/1.mp3"
 now_playing_bg = pygame.image.load('Assets/UI/now playing.png')
 now_playing_bg = pygame.transform.scale(now_playing_bg, (WINDOW_WIDTH / 4, WINDOW_HEIGHT / 4))
 mixer.music.load(bgm)
@@ -127,12 +132,16 @@ songRect.topright = (WINDOW_WIDTH, 0)
 songbgRect.topright = (WINDOW_WIDTH, 0)
 
 # Create a player group and player object
+keys = pygame.key.get_pressed()
 my_player_group = pygame.sprite.Group()
-player_1 = players(pygame.K_w, pygame.K_a, pygame.K_d, pygame.K_s, WINDOW_WIDTH / 3)
-player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 * WINDOW_WIDTH / 3)
+player_1 = players(pygame.K_w, pygame.K_a, pygame.K_d, pygame.K_s, WINDOW_WIDTH / 3, "bingo")
+player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 * WINDOW_WIDTH / 3, "bingo")
 my_player_group.add(player_1)
 my_player_group.add(player_2)
+
+
 # Main game loop
+pygame.mixer.music.play()
 running = True
 while running:
     for event in pygame.event.get():
@@ -140,7 +149,6 @@ while running:
             running = False
 
     # Play Background
-
     success, bg_image = bg.read()
 
     bg_surf = pygame.transform.scale(pygame.image.frombuffer(bg_image.tobytes(), bg_image.shape[1::-1], "BGR"),
