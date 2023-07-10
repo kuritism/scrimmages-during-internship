@@ -39,7 +39,7 @@ class Game():
 
 class players(pygame.sprite.Sprite):
 
-    def __init__(self):
+    def __init__(self, jump, moveleft, moveright, crouch, spawn):
         """Initialize the player"""
         super().__init__()
         self.DEFAULT_IMAGE_SIZE = (160, 160)
@@ -57,6 +57,11 @@ class players(pygame.sprite.Sprite):
         self.is_jump = False
         self.crouching = False
         self.crouch_height = WINDOW_HEIGHT + 90
+        self.JUMP = jump
+        self.MOVELEFT = moveleft
+        self.MOVERIGHT = moveright
+        self.CROUCH = crouch
+
 
     def update(self):
         """Update the player"""
@@ -64,15 +69,15 @@ class players(pygame.sprite.Sprite):
         self.xvelocity = 0
 
         # Move the player within the bounds of the screen
-        if keys[pygame.K_a] and self.rect.left > 0:
+        if keys[self.MOVELEFT] and self.rect.left > 0:
             self.xvelocity = -6
             self.image = self.leftimage
-        if keys[pygame.K_d] and self.rect.right < WINDOW_WIDTH:
+        if keys[self.MOVERIGHT] and self.rect.right < WINDOW_WIDTH:
             self.xvelocity = 6
             self.image = self.rightimage
-        if keys[pygame.K_SPACE] or keys[pygame.K_w] and self.rect.bottom == WINDOW_HEIGHT:
+        if keys[self.JUMP] and self.rect.bottom == WINDOW_HEIGHT:
             self.is_jump = True
-        if keys[pygame.K_s] and not self.is_jump:
+        if keys[self.CROUCH] and not self.is_jump:
             self.crouching = True
 
         if self.is_jump:
@@ -123,9 +128,10 @@ songbgRect.topright = (WINDOW_WIDTH, 0)
 
 # Create a player group and player object
 my_player_group = pygame.sprite.Group()
-my_player = players()
-my_player_group.add(my_player)
-
+player_1 = players(pygame.K_w, pygame.K_a, pygame.K_d, pygame.K_s, WINDOW_WIDTH / 3)
+player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 * WINDOW_WIDTH / 3)
+my_player_group.add(player_1)
+my_player_group.add(player_2)
 # Main game loop
 running = True
 while running:
