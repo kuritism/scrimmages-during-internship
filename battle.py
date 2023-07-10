@@ -51,7 +51,7 @@ class players(pygame.sprite.Sprite):
         self.rightimage = pygame.transform.scale(
             pygame.image.load("Characters/" + character + "/sprites/" + character + "_Face_Right.png"),
             self.DEFAULT_IMAGE_SIZE)
-        self.leftimage = pygame.transform.scale(pygame.image.load("Characters/bingo/sprites/bingo_Face_Left.png"),
+        self.leftimage = pygame.transform.scale(pygame.image.load("Characters/" + character + "/sprites/" + character + "_Face_Left.png"),
                                                 self.DEFAULT_IMAGE_SIZE)
         self.image = self.rightimage
         self.rect = self.image.get_rect()
