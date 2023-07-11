@@ -172,7 +172,7 @@ player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 
 my_player_group.add(player_1)
 my_player_group.add(player_2)
 
-
+wait = 0
 # Main game loop
 pygame.mixer.music.play()
 running = True
