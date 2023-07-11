@@ -129,14 +129,16 @@ class players(pygame.sprite.Sprite):
             elif self.user == "Player 2":
                 pygame.time.set_timer(self.P2_ATTACKCOOLDOWN, 2000)
 
-
         self.rect.x += self.xvelocity
 
     def takeDamage(self, atk_type):
 
         if atk_type == "BASIC":
-            self.health -= 10
+            self.health -= 50
             print(self.user + " has " + str(self.health))
+
+
+
 
 
 
@@ -146,8 +148,9 @@ class arena():
 
 # Pick background
 bg = cv2.VideoCapture("Assets/Backgrounds/" + str(random.randint(1, 1)) + ".mp4")
+death = cv2.VideoCapture("Assets/death.mp4")
 success, bg_image = bg.read()
-
+success, death_image = death.read()
 # Pick music (ui)
 bgm = "Audio/BGM/1.mp3"
 now_playing_bg = pygame.image.load('Assets/UI/now playing.png')
@@ -207,7 +210,6 @@ while running:
             player_1.takeDamage(player_2.atk_type)
 
 
-
     # Play Background
     success, bg_image = bg.read()
 
@@ -222,11 +224,42 @@ while running:
     display_surface.blit(now_playing_bg, songbgRect)
     display_surface.blit(song_text, songRect)
     display_surface.blit(now_playing, songRect)
-
-    # Update
-
     my_player_group.update()
     my_player_group.draw(display_surface)
+
+    # Update
+    if player_1.health < 1:
+        try:
+            success, death_image = death.read()
+            death_surf = pygame.transform.scale(
+                pygame.image.frombuffer(death_image.tobytes(), death_image.shape[1::-1], "BGR"),
+                ((160, 160)))
+            display_surface.blit(death_surf, (player_1.rect))
+            print('p1 dead')
+            player_1.kill()
+
+        except AttributeError:
+            display_surface.blit(now_playing_bg, songbgRect)
+            display_surface.blit(song_text, songRect)
+            display_surface.blit(now_playing, songRect)
+
+    if player_2.health < 1:
+        try:
+            success, death_image = death.read()
+            death_surf = pygame.transform.scale(
+                pygame.image.frombuffer(death_image.tobytes(), death_image.shape[1::-1], "BGR"),
+                ((160, 160)))
+            display_surface.blit(death_surf, (player_2.rect))
+            print('p2 dead')
+            player_2.kill()
+
+        except AttributeError:
+            display_surface.blit(now_playing_bg, songbgRect)
+            display_surface.blit(song_text, songRect)
+            display_surface.blit(now_playing, songRect)
+
+
+
 
     # Update the display and tick clock
     pygame.display.update()
