@@ -44,7 +44,7 @@ class Game():
 
 class players(pygame.sprite.Sprite):
 
-    def __init__(self, jump, moveleft, moveright, crouch, spawn, character):
+    def __init__(self, jump, moveleft, moveright, crouch, spawn, character, attack):
         """Initialize the player"""
         super().__init__()
         self.DEFAULT_IMAGE_SIZE = (160, 160)
@@ -67,13 +67,17 @@ class players(pygame.sprite.Sprite):
         self.MOVELEFT = moveleft
         self.MOVERIGHT = moveright
         self.CROUCH = crouch
+        self.ATTACK = attack
+        self.health = 100
+        self.is_attack = False
+        self.ATTACKCOOLDOWN = pygame.USEREVENT + 1
 
     def update(self):
         """Update the player"""
         keys = pygame.key.get_pressed()
         self.xvelocity = 0
 
-        # Move the player within the bounds of the screen
+        # Move left and right
         if keys[self.MOVELEFT] and self.rect.left > 0:
             self.xvelocity = -6
             self.image = self.leftimage
@@ -85,11 +89,11 @@ class players(pygame.sprite.Sprite):
         if keys[self.CROUCH] and not self.is_jump:
             self.crouching = True
 
+        # Jump
         if self.is_jump:
             F = (1 / 2) * self.m * (self.yvelocity ** 2)
             self.rect.y -= F
             self.yvelocity -= 1
-            print(self.yvelocity)
             if self.yvelocity < 0:
                 self.m = -1
         if self.rect.bottom >= WINDOW_HEIGHT:
@@ -98,10 +102,23 @@ class players(pygame.sprite.Sprite):
             self.rect.bottom = WINDOW_HEIGHT
             self.m = 1
 
+        # Crouch
         if self.crouching:
             self.rect.bottom = self.crouch_height
             self.xvelocity = 0
             self.crouching = False
+
+        # Attack
+        #for event in pygame.event.get():
+        #    if event.type == pygame.KEYDOWN:
+        if keys[self.ATTACK] and player_1.rect.colliderect(player_2.rect):
+            self.is_attack = True
+        if self.is_attack:
+            print("ouchie")
+            self.is_attack = False
+
+            pygame.time.set_timer(self.ATTACKCOOLDOWN, 6000)
+
         self.rect.x += self.xvelocity
 
 
@@ -134,8 +151,8 @@ songbgRect.topright = (WINDOW_WIDTH, 0)
 # Create a player group and player object
 keys = pygame.key.get_pressed()
 my_player_group = pygame.sprite.Group()
-player_1 = players(pygame.K_w, pygame.K_a, pygame.K_d, pygame.K_s, WINDOW_WIDTH / 3, "bingo")
-player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 * WINDOW_WIDTH / 3, "bingo")
+player_1 = players(pygame.K_w, pygame.K_a, pygame.K_d, pygame.K_s, WINDOW_WIDTH / 3, "bingo", pygame.K_z)
+player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 * WINDOW_WIDTH / 3, "bingo", pygame.K_x)
 my_player_group.add(player_1)
 my_player_group.add(player_2)
 
@@ -147,6 +164,8 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if pygame.event.get(player_1.ATTACKCOOLDOWN):
+            print('cooldown is up')
 
     # Play Background
     success, bg_image = bg.read()
