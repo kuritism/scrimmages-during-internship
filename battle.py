@@ -45,7 +45,7 @@ class Game():
 
 class players(pygame.sprite.Sprite):
 
-    def __init__(self, jump, moveleft, moveright, crouch, spawn, character, attack):
+    def __init__(self, jump, moveleft, moveright, crouch, spawn, character, attack, user):
         """Initialize the player"""
         super().__init__()
         self.DEFAULT_IMAGE_SIZE = (160, 160)
@@ -71,10 +71,12 @@ class players(pygame.sprite.Sprite):
         self.ATTACK = attack
         #self.is_attack = False
         self.is_atkcooldown = False
-        self.ATTACKCOOLDOWN = pygame.USEREVENT + 1
+        self.P1_ATTACKCOOLDOWN = pygame.USEREVENT + 1
+        self.P2_ATTACKCOOLDOWN = pygame.USEREVENT + 2
         self.deal_damage = False
         self.atk_type = ""
         self.health = 100
+        self.user = user
 
     def update(self):
         """Update the player"""
@@ -118,23 +120,23 @@ class players(pygame.sprite.Sprite):
         if keys[self.ATTACK] and not self.is_atkcooldown and player_1.rect.colliderect(player_2):
             #self.is_attack = True
             self.atk_type = "BASIC"
-            print("ouchie")
+            print(self.user + " Basic Attack")
             self.deal_damage = True
             self.is_atkcooldown = True
-            pygame.time.set_timer(self.ATTACKCOOLDOWN, 2000)
-
-
-        '''if self.is_attack and not self.is_atkcooldown:
-            self.is_attack = False'''
+            if self.user == "Player 1":
+                pygame.time.set_timer(self.P1_ATTACKCOOLDOWN, 2000)
+                print("Player 1 Basic cooldown started")
+            elif self.user == "Player 2":
+                pygame.time.set_timer(self.P2_ATTACKCOOLDOWN, 2000)
 
 
         self.rect.x += self.xvelocity
 
     def takeDamage(self, atk_type):
 
-            if atk_type == "BASIC":
-                self.health -= 10
-                print(self.health)
+        if atk_type == "BASIC":
+            self.health -= 10
+            print(self.user + " has " + str(self.health))
 
 
 
@@ -167,8 +169,8 @@ songbgRect.topright = (WINDOW_WIDTH, 0)
 # Create a player group and player object
 keys = pygame.key.get_pressed()
 my_player_group = pygame.sprite.Group()
-player_1 = players(pygame.K_w, pygame.K_a, pygame.K_d, pygame.K_s, WINDOW_WIDTH / 3, "bingo", pygame.K_x)
-player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 * WINDOW_WIDTH / 3, "bingo", pygame.K_z)
+player_1 = players(pygame.K_w, pygame.K_a, pygame.K_d, pygame.K_s, WINDOW_WIDTH / 3, "bingo", pygame.K_x, "Player 1")
+player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 * WINDOW_WIDTH / 3, "bingo", pygame.K_z, "Player 2")
 my_player_group.add(player_1)
 my_player_group.add(player_2)
 
@@ -183,16 +185,26 @@ while running:
             running = False
 
 
-        if event.type == player_1.ATTACKCOOLDOWN:
+        if event.type == player_1.P1_ATTACKCOOLDOWN:
             player_1.is_atkcooldown = False
             player_1.deal_damage = False
-            pygame.time.set_timer(player_1.ATTACKCOOLDOWN, 0)
-            print('cooldown is up')
+            pygame.time.set_timer(player_1.P1_ATTACKCOOLDOWN, 0)
+            print('Player 1 Basic cooldown is up')
         if player_1.deal_damage == True:
             player_1.deal_damage = False
             print(player_1.is_atkcooldown)
             player_2.takeDamage(player_1.atk_type)
 
+
+        if event.type == player_2.P2_ATTACKCOOLDOWN:
+            player_2.is_atkcooldown = False
+            player_2.deal_damage = False
+            pygame.time.set_timer(player_2.P2_ATTACKCOOLDOWN, 0)
+            print('Player 2 Basic cooldown is up')
+        if player_2.deal_damage == True:
+            player_2.deal_damage = False
+            print(player_2.is_atkcooldown)
+            player_1.takeDamage(player_2.atk_type)
 
 
 
