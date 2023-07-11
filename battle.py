@@ -77,6 +77,8 @@ class players(pygame.sprite.Sprite):
         self.atk_type = ""
         self.health = 100
         self.user = user
+        self.healthbar = pygame.image.load('Assets/Healthbar/' + str(int(round(self.health/10,0))) + " HP " + self.user + ".png")
+
 
     def update(self):
         """Update the player"""
@@ -123,10 +125,10 @@ class players(pygame.sprite.Sprite):
             print(self.user + " Basic Attack")
             self.deal_damage = True
             self.is_atkcooldown = True
-            if self.user == "Player 1":
+            if self.user == "P1":
                 pygame.time.set_timer(self.P1_ATTACKCOOLDOWN, 2000)
-                print("Player 1 Basic cooldown started")
-            elif self.user == "Player 2":
+                print("P1 Basic cooldown started")
+            elif self.user == "P2":
                 pygame.time.set_timer(self.P2_ATTACKCOOLDOWN, 2000)
 
         self.rect.x += self.xvelocity
@@ -172,10 +174,13 @@ songbgRect.topright = (WINDOW_WIDTH, 0)
 # Create a player group and player object
 keys = pygame.key.get_pressed()
 my_player_group = pygame.sprite.Group()
-player_1 = players(pygame.K_w, pygame.K_a, pygame.K_d, pygame.K_s, WINDOW_WIDTH / 3, "bingo", pygame.K_x, "Player 1")
-player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 * WINDOW_WIDTH / 3, "bingo", pygame.K_z, "Player 2")
+player_1 = players(pygame.K_w, pygame.K_a, pygame.K_d, pygame.K_s, WINDOW_WIDTH / 3, "bingo", pygame.K_x, "P1")
+player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 * WINDOW_WIDTH / 3, "bingo", pygame.K_z, "P2")
 my_player_group.add(player_1)
 my_player_group.add(player_2)
+
+# Create Health Bars
+
 
 wait = 0
 # Main game loop
@@ -192,7 +197,7 @@ while running:
             player_1.is_atkcooldown = False
             player_1.deal_damage = False
             pygame.time.set_timer(player_1.P1_ATTACKCOOLDOWN, 0)
-            print('Player 1 Basic cooldown is up')
+            print('P1 Basic cooldown is up')
         if player_1.deal_damage == True:
             player_1.deal_damage = False
             print(player_1.is_atkcooldown)
@@ -203,7 +208,7 @@ while running:
             player_2.is_atkcooldown = False
             player_2.deal_damage = False
             pygame.time.set_timer(player_2.P2_ATTACKCOOLDOWN, 0)
-            print('Player 2 Basic cooldown is up')
+            print('P2 Basic cooldown is up')
         if player_2.deal_damage == True:
             player_2.deal_damage = False
             print(player_2.is_atkcooldown)
@@ -220,8 +225,17 @@ while running:
     display_surface.fill((20, 175, 175))
     display_surface.blit(bg_surf, (0, 0))
 
+    P1healthbarRect = player_1.healthbar.get_rect()
+    P2healthbarRect = player_2.healthbar.get_rect()
+    P1healthbarRect.topleft = (WINDOW_WIDTH,0)
+    P2healthbarRect.topright = (WINDOW_WIDTH,WINDOW_HEIGHT)
+
+
+    display_surface.blit(player_1.healthbar, P1healthbarRect)
+    display_surface.blit(player_2.healthbar, P1healthbarRect)
+
     # Blit Song title
-    display_surface.blit(now_playing_bg, songbgRect)
+    """ display_surface.blit(now_playing_bg, songbgRect)"""
     display_surface.blit(song_text, songRect)
     display_surface.blit(now_playing, songRect)
     my_player_group.update()
