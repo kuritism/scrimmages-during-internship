@@ -4,8 +4,7 @@ Will feature many skrunklies
 https://code-with-me.global.jetbrains.com/Jnp3FZ3YQUQhkEiQpDb8DA#p=PC&fp=F5FFF859DEEA4099FB7289EBAD30485564C30AF844C122F3FE7A7A27B7F220E3
 # TO DO
 use socket for multiplayer !!!!  
-pygame.clock PLS  
-Find a solution to program crashing after background video finishes(loop?)
+
 
 
 
