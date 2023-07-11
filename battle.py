@@ -4,6 +4,7 @@
 import cv2
 import pygame
 import random
+
 from pygame import mixer, font
 from tinytag import TinyTag
 from hollow import textOutline
@@ -68,9 +69,12 @@ class players(pygame.sprite.Sprite):
         self.MOVERIGHT = moveright
         self.CROUCH = crouch
         self.ATTACK = attack
-        self.health = 100
-        self.is_attack = False
+        #self.is_attack = False
+        self.is_atkcooldown = False
         self.ATTACKCOOLDOWN = pygame.USEREVENT + 1
+        self.deal_damage = False
+        self.atk_type = ""
+        self.health = 100
 
     def update(self):
         """Update the player"""
@@ -109,17 +113,29 @@ class players(pygame.sprite.Sprite):
             self.crouching = False
 
         # Attack
-        #for event in pygame.event.get():
+        #for event in pygame.event.get():3
         #    if event.type == pygame.KEYDOWN:
-        if keys[self.ATTACK] and player_1.rect.colliderect(player_2.rect):
-            self.is_attack = True
-        if self.is_attack:
+        if keys[self.ATTACK] and not self.is_atkcooldown and player_1.rect.colliderect(player_2):
+            #self.is_attack = True
+            self.atk_type = "BASIC"
             print("ouchie")
-            self.is_attack = False
+            self.deal_damage = True
+            self.is_atkcooldown = True
+            pygame.time.set_timer(self.ATTACKCOOLDOWN, 2000)
 
-            pygame.time.set_timer(self.ATTACKCOOLDOWN, 6000)
+
+        '''if self.is_attack and not self.is_atkcooldown:
+            self.is_attack = False'''
+
 
         self.rect.x += self.xvelocity
+
+    def takeDamage(self, atk_type):
+
+            if atk_type == "BASIC":
+                self.health -= 10
+                print(self.health)
+
 
 
 class arena():
@@ -151,8 +167,8 @@ songbgRect.topright = (WINDOW_WIDTH, 0)
 # Create a player group and player object
 keys = pygame.key.get_pressed()
 my_player_group = pygame.sprite.Group()
-player_1 = players(pygame.K_w, pygame.K_a, pygame.K_d, pygame.K_s, WINDOW_WIDTH / 3, "bingo", pygame.K_z)
-player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 * WINDOW_WIDTH / 3, "bingo", pygame.K_x)
+player_1 = players(pygame.K_w, pygame.K_a, pygame.K_d, pygame.K_s, WINDOW_WIDTH / 3, "bingo", pygame.K_x)
+player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 * WINDOW_WIDTH / 3, "bingo", pygame.K_z)
 my_player_group.add(player_1)
 my_player_group.add(player_2)
 
@@ -161,11 +177,24 @@ my_player_group.add(player_2)
 pygame.mixer.music.play()
 running = True
 while running:
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if pygame.event.get(player_1.ATTACKCOOLDOWN):
+
+
+        if event.type == player_1.ATTACKCOOLDOWN:
+            player_1.is_atkcooldown = False
+            player_1.deal_damage = False
+            pygame.time.set_timer(player_1.ATTACKCOOLDOWN, 0)
             print('cooldown is up')
+        if player_1.deal_damage == True:
+            player_1.deal_damage = False
+            print(player_1.is_atkcooldown)
+            player_2.takeDamage(player_1.atk_type)
+
+
+
 
     # Play Background
     success, bg_image = bg.read()
