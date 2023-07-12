@@ -231,8 +231,8 @@ while running:
     P2healthbarRect.topright = (WINDOW_WIDTH,WINDOW_HEIGHT)
 
 
-    display_surface.blit(player_1.healthbar, P1healthbarRect)
-    display_surface.blit(player_2.healthbar, P1healthbarRect)
+    display_surface.blit(pygame.transform.scale(player_1.healthbar,(500,500)), P1healthbarRect)
+    display_surface.blit(pygame.transform.scale(player_2.healthbar,(500,500)), P2healthbarRect)
 
     # Blit Song title
     """ display_surface.blit(now_playing_bg, songbgRect)"""
@@ -268,7 +268,6 @@ while running:
             player_2.kill()
 
         except AttributeError:
-            display_surface.blit(now_playing_bg, songbgRect)
             display_surface.blit(song_text, songRect)
             display_surface.blit(now_playing, songRect)
 
