@@ -117,10 +117,7 @@ class players(pygame.sprite.Sprite):
             self.crouching = False
 
         # Attack
-        #for event in pygame.event.get():3
-        #    if event.type == pygame.KEYDOWN:
         if keys[self.ATTACK] and not self.is_atkcooldown and player_1.rect.colliderect(player_2):
-            #self.is_attack = True
             self.atk_type = "BASIC"
             print(self.user + " Basic Attack")
             self.deal_damage = True
@@ -173,7 +170,7 @@ song_text = song_font.render(str(song_title), True, (0, 0, 0))
 now_playing = textOutline(song_font, song_title, (0, 0, 0), (255, 255, 255))
 songRect = now_playing.get_rect()
 songbgRect = now_playing_bg.get_rect()
-songRect.topright = (WINDOW_WIDTH, 0)
+songRect.midtop = (WINDOW_WIDTH/2, 0)
 songbgRect.topright = (WINDOW_WIDTH, 0)
 
 # Create a player group and player object
@@ -220,8 +217,8 @@ while running:
             player_1.takeDamage(player_2.atk_type)
 
     # HP Bar
-    P1healthbarRect = (pygame.transform.scale(player_1.healthbar,(249,66)).get_rect())
-    P2healthbarRect = (pygame.transform.scale(player_2.healthbar,(249,66)).get_rect())
+    P1healthbarRect = (pygame.transform.scale(player_1.healthbar,(249*2,66*2)).get_rect())
+    P2healthbarRect = (pygame.transform.scale(player_2.healthbar,(249*2,66*2)).get_rect())
     P1healthbarRect.topleft = (0,0)
     P2healthbarRect.topright = (WINDOW_WIDTH,0)
 
@@ -237,8 +234,8 @@ while running:
 
 
 
-    display_surface.blit(pygame.transform.scale(player_1.healthbar,(249,66)), P1healthbarRect)
-    display_surface.blit(pygame.transform.scale(player_2.healthbar,(249,66)), P2healthbarRect)
+    display_surface.blit(pygame.transform.scale(player_1.healthbar,(249*2,66*2)), P1healthbarRect)
+    display_surface.blit(pygame.transform.scale(player_2.healthbar,(249*2,66*2)), P2healthbarRect)
 
     # Blit Song title
     """ display_surface.blit(now_playing_bg, songbgRect)"""
