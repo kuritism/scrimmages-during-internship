@@ -8,6 +8,7 @@ import random
 from pygame import mixer, font
 from tinytag import TinyTag
 from hollow import textOutline
+from grayfunc import greyscale
 
 # Initialize
 pygame.init()
@@ -78,6 +79,7 @@ class players(pygame.sprite.Sprite):
         self.health = 100
         self.user = user
         self.healthbar = pygame.image.load('Assets/Healthbar/' + str(int(round(self.health/10,0))) + " HP " + self.user + ".png")
+        self.playericon = pygame.transform.scale(pygame.image.load("Characters/" + character + "/sprites/" + character + "_Icon.png"),self.DEFAULT_IMAGE_SIZE)
 
 
     def update(self):
@@ -176,8 +178,8 @@ songbgRect.topright = (WINDOW_WIDTH, 0)
 # Create a player group and player object
 keys = pygame.key.get_pressed()
 my_player_group = pygame.sprite.Group()
-player_1 = players(pygame.K_w, pygame.K_a, pygame.K_d, pygame.K_s, WINDOW_WIDTH / 3, "bingo", pygame.K_x, "P1")
-player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 * WINDOW_WIDTH / 3, "bingo", pygame.K_z, "P2")
+player_1 = players(pygame.K_w, pygame.K_a, pygame.K_d, pygame.K_s, WINDOW_WIDTH / 3, "bingo", pygame.K_r, "P1")
+player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 * WINDOW_WIDTH / 3, "bingo", pygame.K_m, "P2")
 my_player_group.add(player_1)
 my_player_group.add(player_2)
 
@@ -222,6 +224,15 @@ while running:
     P1healthbarRect.topleft = (0,0)
     P2healthbarRect.topright = (WINDOW_WIDTH,0)
 
+
+    #ICON
+    iconcoord = (80,80)
+    P1iconRect = (pygame.transform.scale(player_1.playericon, (iconcoord)).get_rect())
+    P2iconRect = (pygame.transform.scale(player_1.playericon, (iconcoord)).get_rect())
+    P1iconRect.topleft = (0+(WINDOW_WIDTH/200),WINDOW_HEIGHT/26.5)
+    P2iconRect.topright = (WINDOW_WIDTH-(WINDOW_WIDTH/200),WINDOW_HEIGHT/26.5)
+
+
     # Play Background
     success, bg_image = bg.read()
 
@@ -236,6 +247,8 @@ while running:
 
     display_surface.blit(pygame.transform.scale(player_1.healthbar,(249*2,66*2)), P1healthbarRect)
     display_surface.blit(pygame.transform.scale(player_2.healthbar,(249*2,66*2)), P2healthbarRect)
+    display_surface.blit(pygame.transform.scale(player_1.playericon,(iconcoord)), P1iconRect)
+    display_surface.blit(pygame.transform.scale(player_2.playericon,(iconcoord)), P2iconRect)
 
     # Blit Song title
     """ display_surface.blit(now_playing_bg, songbgRect)"""
@@ -252,6 +265,8 @@ while running:
                 pygame.image.frombuffer(death_image.tobytes(), death_image.shape[1::-1], "BGR"),
                 ((160, 160)))
             display_surface.blit(death_surf, (player_1.rect))
+            P1_death = greyscale(player_1.playericon)
+            display_surface.blit(pygame.transform.scale(P1_death, (iconcoord)), P1iconRect)
             print('p1 dead')
             player_1.kill()
 
@@ -259,6 +274,7 @@ while running:
 
             display_surface.blit(song_text, songRect)
             display_surface.blit(now_playing, songRect)
+            display_surface.blit(pygame.transform.scale(P1_death, (iconcoord)), P1iconRect)
 
     if player_2.health < 1:
         try:
@@ -267,12 +283,15 @@ while running:
                 pygame.image.frombuffer(death_image.tobytes(), death_image.shape[1::-1], "BGR"),
                 ((160, 160)))
             display_surface.blit(death_surf, (player_2.rect))
+            P2_death = greyscale(player_2.playericon)
+            display_surface.blit(pygame.transform.scale(P2_death, (iconcoord)), P2iconRect)
             print('p2 dead')
             player_2.kill()
 
         except AttributeError:
             display_surface.blit(song_text, songRect)
             display_surface.blit(now_playing, songRect)
+            display_surface.blit(pygame.transform.scale(P2_death, (iconcoord)), P2iconRect)
 
 
 
