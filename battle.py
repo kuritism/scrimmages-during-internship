@@ -139,6 +139,11 @@ class players(pygame.sprite.Sprite):
             self.health -= 50
             print(self.user + " has " + str(self.health))
 
+        self.healthbar = pygame.image.load(
+            'Assets/Healthbar/' + str(int(round(self.health / 10, 0))) + " HP " + self.user + ".png")
+
+
+
 
 
 
@@ -214,6 +219,11 @@ while running:
             print(player_2.is_atkcooldown)
             player_1.takeDamage(player_2.atk_type)
 
+    # HP Bar
+    P1healthbarRect = (pygame.transform.scale(player_1.healthbar,(249,66)).get_rect())
+    P2healthbarRect = (pygame.transform.scale(player_2.healthbar,(249,66)).get_rect())
+    P1healthbarRect.topleft = (0,0)
+    P2healthbarRect.topright = (WINDOW_WIDTH,0)
 
     # Play Background
     success, bg_image = bg.read()
@@ -225,14 +235,10 @@ while running:
     display_surface.fill((20, 175, 175))
     display_surface.blit(bg_surf, (0, 0))
 
-    P1healthbarRect = player_1.healthbar.get_rect()
-    P2healthbarRect = player_2.healthbar.get_rect()
-    P1healthbarRect.topleft = (WINDOW_WIDTH,0)
-    P2healthbarRect.topright = (WINDOW_WIDTH,WINDOW_HEIGHT)
 
 
-    display_surface.blit(pygame.transform.scale(player_1.healthbar,(500,500)), P1healthbarRect)
-    display_surface.blit(pygame.transform.scale(player_2.healthbar,(500,500)), P2healthbarRect)
+    display_surface.blit(pygame.transform.scale(player_1.healthbar,(249,66)), P1healthbarRect)
+    display_surface.blit(pygame.transform.scale(player_2.healthbar,(249,66)), P2healthbarRect)
 
     # Blit Song title
     """ display_surface.blit(now_playing_bg, songbgRect)"""
@@ -253,7 +259,7 @@ while running:
             player_1.kill()
 
         except AttributeError:
-            display_surface.blit(now_playing_bg, songbgRect)
+
             display_surface.blit(song_text, songRect)
             display_surface.blit(now_playing, songRect)
 
