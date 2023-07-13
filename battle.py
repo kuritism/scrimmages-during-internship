@@ -27,6 +27,18 @@ clock = pygame.time.Clock()
 
 
 ## CLASSES ##
+def video(param, read, coords, blit):
+    success, param = read.read()
+    try:
+        surf = pygame.transform.scale(
+            pygame.image.frombuffer(param.tobytes(), param.shape[1::-1], "BGR"),
+            (coords))
+        display_surface.blit(surf, blit)
+
+    except AttributeError:
+        display_surface.blit(song_text, songRect)
+        display_surface.blit(now_playing, songRect)
+
 
 class Game():
 
@@ -142,12 +154,6 @@ class players(pygame.sprite.Sprite):
             'Assets/Healthbar/' + str(int(round(self.health / 10, 0))) + " HP " + self.user + ".png")
 
 
-
-
-
-
-
-
 class arena():
     pass
 
@@ -178,12 +184,10 @@ songbgRect.topright = (WINDOW_WIDTH, 0)
 # Create a player group and player object
 keys = pygame.key.get_pressed()
 my_player_group = pygame.sprite.Group()
-player_1 = players(pygame.K_w, pygame.K_a, pygame.K_d, pygame.K_s, WINDOW_WIDTH / 3, "bingo", pygame.K_r, "P1")
+player_1 = players(pygame.K_w, pygame.K_a, pygame.K_d, pygame.K_s, WINDOW_WIDTH / 3, "emu", pygame.K_r, "P1")
 player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 * WINDOW_WIDTH / 3, "bingo", pygame.K_m, "P2")
 my_player_group.add(player_1)
 my_player_group.add(player_2)
-
-# Create Health Bars
 
 
 wait = 0
@@ -234,14 +238,9 @@ while running:
 
 
     # Play Background
-    success, bg_image = bg.read()
-
-    bg_surf = pygame.transform.scale(pygame.image.frombuffer(bg_image.tobytes(), bg_image.shape[1::-1], "BGR"),
-                                     (WINDOW_WIDTH, WINDOW_HEIGHT))
+    video(bg_image, bg, (WINDOW_WIDTH, WINDOW_HEIGHT), (0,0))
 
     # Blit background
-    display_surface.fill((20, 175, 175))
-    display_surface.blit(bg_surf, (0, 0))
 
 
 
@@ -260,37 +259,24 @@ while running:
     # Update
     if player_1.health < 1:
         try:
-            success, death_image = death.read()
-            death_surf = pygame.transform.scale(
-                pygame.image.frombuffer(death_image.tobytes(), death_image.shape[1::-1], "BGR"),
-                ((160, 160)))
-            display_surface.blit(death_surf, (player_1.rect))
+            video(death_image, death, (160, 160), player_1.rect)
             P1_death = greyscale(player_1.playericon)
             display_surface.blit(pygame.transform.scale(P1_death, (iconcoord)), P1iconRect)
             print('p1 dead')
             player_1.kill()
 
         except AttributeError:
-
-            display_surface.blit(song_text, songRect)
-            display_surface.blit(now_playing, songRect)
             display_surface.blit(pygame.transform.scale(P1_death, (iconcoord)), P1iconRect)
 
     if player_2.health < 1:
         try:
-            success, death_image = death.read()
-            death_surf = pygame.transform.scale(
-                pygame.image.frombuffer(death_image.tobytes(), death_image.shape[1::-1], "BGR"),
-                ((160, 160)))
-            display_surface.blit(death_surf, (player_2.rect))
+            video(death_image, death, (160, 160), player_2.rect)
             P2_death = greyscale(player_2.playericon)
             display_surface.blit(pygame.transform.scale(P2_death, (iconcoord)), P2iconRect)
             print('p2 dead')
             player_2.kill()
 
         except AttributeError:
-            display_surface.blit(song_text, songRect)
-            display_surface.blit(now_playing, songRect)
             display_surface.blit(pygame.transform.scale(P2_death, (iconcoord)), P2iconRect)
 
 
