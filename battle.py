@@ -25,7 +25,6 @@ pygame.display.set_caption("Scrimmage During Internship")
 FPS = 60
 clock = pygame.time.Clock()
 
-
 ## CLASSES ##
 def video(param, read, coords, blit):
     success, param = read.read()
@@ -61,12 +60,11 @@ class players(pygame.sprite.Sprite):
     def __init__(self, jump, moveleft, moveright, crouch, spawn, character, attack, user):
         """Initialize the player"""
         super().__init__()
-        self.DEFAULT_IMAGE_SIZE = (160, 160)
-        self.rightimage = pygame.transform.scale(
-            pygame.image.load("Characters/" + character + "/sprites/" + character + "_Face_Right.png"),
-            self.DEFAULT_IMAGE_SIZE)
-        self.leftimage = pygame.transform.scale(pygame.image.load("Characters/" + character + "/sprites/" + character + "_Face_Left.png"),
-                                                self.DEFAULT_IMAGE_SIZE)
+        #self.DEFAULT_IMAGE_SIZE = (160, 160)
+        self.rightimage = pygame.image.load("Characters/" + character + "/sprites/" + character + "_Face_Right.png")
+        self.leftimage = pygame.image.load("Characters/" + character + "/sprites/" + character + "_Face_Left.png")
+        self.leftattack = pygame.image.load("Characters/" + character + "/sprites/" + character + "_Attack_Left.png")
+        self.rightattack = pygame.image.load("Characters/" + character + "/sprites/" + character + "_Attack_Right.png")
         self.image = self.rightimage
         self.rect = self.image.get_rect()
         self.rect.centerx = spawn
@@ -86,12 +84,14 @@ class players(pygame.sprite.Sprite):
         self.is_atkcooldown = False
         self.P1_ATTACKCOOLDOWN = pygame.USEREVENT + 1
         self.P2_ATTACKCOOLDOWN = pygame.USEREVENT + 2
+        self.P1_attack_anim = pygame.USEREVENT + 3
+        self.P2_attack_anim = pygame.USEREVENT + 4
         self.deal_damage = False
         self.atk_type = ""
         self.health = 100
         self.user = user
         self.healthbar = pygame.image.load('Assets/Healthbar/' + str(int(round(self.health/10,0))) + " HP " + self.user + ".png")
-        self.playericon = pygame.transform.scale(pygame.image.load("Characters/" + character + "/sprites/" + character + "_Icon.png"),self.DEFAULT_IMAGE_SIZE)
+        self.playericon = pygame.transform.scale(pygame.image.load("Characters/" + character + "/sprites/" + character + "_Icon.png"),(160,160))
 
 
     def update(self):
@@ -131,16 +131,27 @@ class players(pygame.sprite.Sprite):
             self.crouching = False
 
         # Attack
-        if keys[self.ATTACK] and not self.is_atkcooldown and player_1.rect.colliderect(player_2):
-            self.atk_type = "BASIC"
-            print(self.user + " Basic Attack")
-            self.deal_damage = True
-            self.is_atkcooldown = True
+        if keys[self.ATTACK] and not self.is_atkcooldown :
+            if self.image == self.rightimage:
+                self.image = self.rightattack
+            elif self.image == self.leftimage:
+                self.image = self.leftattack
             if self.user == "P1":
-                pygame.time.set_timer(self.P1_ATTACKCOOLDOWN, 2000)
-                print("P1 Basic cooldown started")
+                pygame.time.set_timer(self.P1_attack_anim, 500)
             elif self.user == "P2":
-                pygame.time.set_timer(self.P2_ATTACKCOOLDOWN, 2000)
+                pygame.time.set_timer(self.P2_attack_anim, 500)
+
+            if player_1.rect.colliderect(player_2):
+                self.atk_type = "BASIC"
+                print(self.user + " Basic Attack")
+                self.deal_damage = True
+                self.is_atkcooldown = True
+                if self.user == "P1":
+                    pygame.time.set_timer(self.P1_ATTACKCOOLDOWN, 2000)
+                    print("P1 Basic cooldown started")
+                elif self.user == "P2":
+                    pygame.time.set_timer(self.P2_ATTACKCOOLDOWN, 2000)
+
 
         self.rect.x += self.xvelocity
 
@@ -159,7 +170,7 @@ class arena():
 
 
 # Pick background
-bg = cv2.VideoCapture("Assets/Backgrounds/" + str(random.randint(1, 1)) + ".mp4")
+bg = cv2.VideoCapture("Assets/Backgrounds/" + str(random.randint(1, 2)) + ".mp4")
 death = cv2.VideoCapture("Assets/death.mp4")
 success, bg_image = bg.read()
 success, death_image = death.read()
@@ -221,6 +232,19 @@ while running:
             player_2.deal_damage = False
             print(player_2.is_atkcooldown)
             player_1.takeDamage(player_2.atk_type)
+
+        if event.type == player_1.P1_attack_anim:
+            if player_1.image == player_1.rightattack:
+                player_1.image = player_1.rightimage
+            elif player_1.image == player_1.leftattack:
+                player_1.image = player_1.leftimage
+
+        if event.type == player_2.P2_attack_anim:
+            if player_2.image == player_2.rightattack:
+                player_2.image = player_2.rightimage
+            elif player_2.image == player_2.leftattack:
+                player_2.image = player_2.leftimage
+
 
     # HP Bar
     P1healthbarRect = (pygame.transform.scale(player_1.healthbar,(249*2,66*2)).get_rect())
