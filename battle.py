@@ -24,6 +24,7 @@ pygame.display.set_caption("Scrimmage During Internship")
 
 FPS = 60
 clock = pygame.time.Clock()
+paused = False
 
 ## CLASSES ##
 def video(param, read, coords, blit):
@@ -35,8 +36,10 @@ def video(param, read, coords, blit):
         display_surface.blit(surf, blit)
 
     except AttributeError:
-        display_surface.blit(song_text, songRect)
-        display_surface.blit(now_playing, songRect)
+        print("teehee")
+        paused = True
+        #display_surface.blit(song_text, songRect)
+        #display_surface.blit(now_playing, songRect)
 
 
 class Game():
@@ -53,6 +56,9 @@ class Game():
         if self.frame_count == FPS:
             self.round_time += 1
             self.frame_count = 0
+        self.game_over_text = font.render("GAME OVER")
+        self.game_over_rect = self.game_over_text.get_rect()
+        self.game_over_rect.center = (WINDOW_WIDTH/2, WINDOW_HEIGHT/2)
 
 
 class players(pygame.sprite.Sprite):
@@ -170,7 +176,7 @@ class arena():
 
 
 # Pick background
-bg = cv2.VideoCapture("Assets/Backgrounds/" + str(random.randint(1, 2)) + ".mp4")
+bg = cv2.VideoCapture("Assets/Backgrounds/" + str(random.randint(2, 2)) + ".mp4")
 death = cv2.VideoCapture("Assets/death.mp4")
 success, bg_image = bg.read()
 success, death_image = death.read()
@@ -265,9 +271,6 @@ while running:
     video(bg_image, bg, (WINDOW_WIDTH, WINDOW_HEIGHT), (0,0))
 
     # Blit background
-
-
-
     display_surface.blit(pygame.transform.scale(player_1.healthbar,(249*2,66*2)), P1healthbarRect)
     display_surface.blit(pygame.transform.scale(player_2.healthbar,(249*2,66*2)), P2healthbarRect)
     display_surface.blit(pygame.transform.scale(player_1.playericon,(iconcoord)), P1iconRect)
@@ -304,6 +307,8 @@ while running:
             display_surface.blit(pygame.transform.scale(P2_death, (iconcoord)), P2iconRect)
 
 
+    while paused:
+        print('pause')
 
 
     # Update the display and tick clock
