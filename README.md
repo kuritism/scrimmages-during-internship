@@ -1,7 +1,7 @@
 # scrimmages-during-internship
 2d Fighting name made in PyGame!!!!!
 Will feature many skrunklies
-https://code-with-me.global.jetbrains.com/AKdTW-ZB0xUQIdmFZAHEXg#p=PC&fp=715C9E10507DEB9EBBD2BF1FC59D3BC4E39D0AF0827DD87E4245B46F666A3948
+https://code-with-me.global.jetbrains.com/Id90hJyeXBKBgOCUlIOEMQ#p=PC&fp=93BE034BFE915E4924660EE941DDB4CE355C10D3AB1A1C59B9B8B93F5361292E
 # TO DO
 edit bingo and tbh ultimate video 
 use socket for multiplayer !!!!  
