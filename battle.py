@@ -25,16 +25,23 @@ pygame.display.set_caption("Scrimmage During Internship")
 FPS = 60
 clock = pygame.time.Clock()
 paused = False
+video_loop = True
 
-def video(read, coords, blit):
+def video(read, coords, blit, path):
+    """Video player function"""
+    global video_loop
+    video_loop = False
     try:
+
         success, param = read.read()
         surf = pygame.transform.scale(
             pygame.image.frombuffer(param.tobytes(), param.shape[1::-1], "BGR"),
             (coords))
         display_surface.blit(surf, blit)
     except AttributeError:
+        print(path)
         print('teehee')
+        video_loop = True
 
 ## CLASSES ##
 
@@ -58,7 +65,7 @@ class Game():
         # Update
         if player_1.health < 1:
             try:
-                video(death, (160, 160), player_1.rect)
+                video(death, (160, 160), player_1.rect,"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
                 P1_death = greyscale(player_1.playericon)
                 display_surface.blit(pygame.transform.scale(P1_death, (iconcoord)), P1iconRect)
                 # print('p1 dead')
@@ -72,7 +79,7 @@ class Game():
 
         if player_2.health < 1:
             try:
-                video(death, (160, 160), player_2.rect)
+                video(death, (160, 160), player_2.rect,"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
                 P2_death = greyscale(player_2.playericon)
                 display_surface.blit(pygame.transform.scale(P2_death, (iconcoord)), P2iconRect)
                 # print('p2 dead')
@@ -83,21 +90,27 @@ class Game():
                 my_game.start_new_round(my_game)
                 print('done')
 
+        print("p1: " + str(player_1.try_ult))
+        print("p2: " + str(player_2.try_ult))
+
         if player_1.try_ult == True:
-            video(player_1.ultimatevideo, (WINDOW_WIDTH, WINDOW_HEIGHT), (0, 0))
-            print("P1 ult works")
+            video(P1ultimatevideo, (WINDOW_WIDTH,WINDOW_HEIGHT),(0,0),"Characters/" + player_1.character + "/videos/" + player_1.character + "_Ultimate_Video.mp4")
             player_1.ultimate = 0
             player_1.ultbar = pygame.transform.scale_by(pygame.image.load(
                 'Assets/Ultimatebar/' + str(int(round(player_1.ultimate))) + " Ult " + player_1.user + ".png"), 4)
-            player_1.try_ult = False
+            if video_loop == True:
+                player_1.try_ult = False
+
 
         if player_2.try_ult == True:
-            video(player_2.ultimatevideo, (WINDOW_WIDTH, WINDOW_HEIGHT), (0, 0))
-            print("P1 ult works")
+
+            video(P2ultimatevideo, (WINDOW_WIDTH, WINDOW_HEIGHT),(0,0),"Characters/" + player_1.character + "/videos/" + player_1.character + "_Ultimate_Video.mp4")
             player_2.ultimate = 0
             player_2.ultbar = pygame.transform.scale_by(pygame.image.load(
                 'Assets/Ultimatebar/' + str(int(round(player_2.ultimate))) + " Ult " + player_2.user + ".png"), 4)
-            player_2.try_ult = False
+            if video_loop == True:
+                player_2.try_ult = False
+
 
     def start_new_round(self):
         # Reset variables
@@ -141,7 +154,7 @@ class players(pygame.sprite.Sprite):
         self.leftimage = pygame.image.load("Characters/" + character + "/sprites/" + character + "_Face_Left.png")
         self.leftattack = pygame.image.load("Characters/" + character + "/sprites/" + character + "_Attack_Left.png")
         self.rightattack = pygame.image.load("Characters/" + character + "/sprites/" + character + "_Attack_Right.png")
-        self.ultimatevideo = cv2.VideoCapture("Characters/" + character + "/videos/" + character + "_Ultimate_Video.mp4")
+        self.character = character
         self.image = self.rightimage
         self.rect = self.image.get_rect()
         self.rect.centerx = spawn
@@ -252,7 +265,7 @@ class players(pygame.sprite.Sprite):
                 self.health = 0
             print(self.user + " has " + str(self.health))
             if self.ultimate <= 100:
-                self.ultimate += 50
+                self.ultimate += 100
             if self.ultimate > 100:
                 self.ultimate = 100
 
@@ -268,10 +281,12 @@ class arena():
 
 
 # Pick background
-bg = cv2.VideoCapture("Assets/Backgrounds/" + str(random.randint(2, 2)) + ".mp4")
+bg = cv2.VideoCapture("Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
 death = cv2.VideoCapture("Assets/death.mp4")
-success, bg_image = bg.read()
-success, death_image = death.read()
+
+#success, bg_image = bg.read()
+#success, death_image = death.read()
+#success, player1.ultimate_image = player1.ultimate_video.read()
 # Pick music (ui)
 bgm = "Audio/BGM/1.mp3"
 now_playing_bg = pygame.image.load('Assets/UI/now playing.png')
@@ -302,6 +317,9 @@ player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 
 my_player_group.add(player_1)
 my_player_group.add(player_2)
 
+
+P1ultimatevideo = cv2.VideoCapture("Characters/" + player_1.character + "/videos/" + player_1.character + "_Ultimate_Video.mp4")
+P2ultimatevideo = cv2.VideoCapture("Characters/" + player_2.character + "/videos/" + player_2.character + "_Ultimate_Video.mp4")
 
 wait = 0
 # Main game loop
@@ -368,9 +386,10 @@ while running:
     P1iconRect.topleft = ((WINDOW_WIDTH/200),WINDOW_HEIGHT/26.5)
     P2iconRect.topright = (WINDOW_WIDTH-(WINDOW_WIDTH/200),WINDOW_HEIGHT/26.5)
 
+    while video_loop:
 
-    # Play Background
-    video(bg, (WINDOW_WIDTH, WINDOW_HEIGHT), (0,0))
+        # Play Background
+        video(bg, (WINDOW_WIDTH, WINDOW_HEIGHT), (0,0),"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
 
     # Blit background
     display_surface.blit(pygame.transform.scale(player_1.healthbar,(249*2,66*2)), P1healthbarRect)
@@ -381,7 +400,7 @@ while running:
     display_surface.blit(pygame.transform.scale(player_2.playericon,(iconcoord)), P2iconRect)
 
     # Blit Song title
-    """ display_surface.blit(now_playing_bg, songbgRect)"""
+    #display_surface.blit(now_playing_bg, songbgRect)
     display_surface.blit(song_text, songRect)
     display_surface.blit(now_playing, songRect)
     my_player_group.update()
