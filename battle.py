@@ -26,21 +26,17 @@ FPS = 60
 clock = pygame.time.Clock()
 paused = False
 
-## CLASSES ##
-def video(param, read, coords, blit):
-    success, param = read.read()
+def video(read, coords, blit):
     try:
+        success, param = read.read()
         surf = pygame.transform.scale(
             pygame.image.frombuffer(param.tobytes(), param.shape[1::-1], "BGR"),
             (coords))
         display_surface.blit(surf, blit)
-
     except AttributeError:
-        print("teehee")
-        paused = True
-        #display_surface.blit(song_text, songRect)
-        #display_surface.blit(now_playing, songRect)
+        print('teehee')
 
+## CLASSES ##
 
 class Game():
 
@@ -49,6 +45,8 @@ class Game():
         self.player = player
         self.frame_count = 0
         self.round_time = 0
+        self.round_number = 0
+        self.score = 0
 
     def update(self):
         """Update the game object"""
@@ -56,9 +54,81 @@ class Game():
         if self.frame_count == FPS:
             self.round_time += 1
             self.frame_count = 0
-        self.game_over_text = font.render("GAME OVER")
+
+        # Update
+        if player_1.health < 1:
+            try:
+                video(death, (160, 160), player_1.rect)
+                P1_death = greyscale(player_1.playericon)
+                display_surface.blit(pygame.transform.scale(P1_death, (iconcoord)), P1iconRect)
+                # print('p1 dead')
+                player_1.kill()
+
+
+            except AttributeError:
+                display_surface.blit(pygame.transform.scale(P1_death, (iconcoord)), P1iconRect)
+                my_game.start_new_round(my_game)
+                print('done')
+
+        if player_2.health < 1:
+            try:
+                video(death, (160, 160), player_2.rect)
+                P2_death = greyscale(player_2.playericon)
+                display_surface.blit(pygame.transform.scale(P2_death, (iconcoord)), P2iconRect)
+                # print('p2 dead')
+                player_2.kill()
+
+            except AttributeError:
+                display_surface.blit(pygame.transform.scale(P2_death, (iconcoord)), P2iconRect)
+                my_game.start_new_round(my_game)
+                print('done')
+
+        if player_1.try_ult == True:
+            video(player_1.ultimatevideo, (WINDOW_WIDTH, WINDOW_HEIGHT), (0, 0))
+            print("P1 ult works")
+            player_1.ultimate = 0
+            player_1.ultbar = pygame.transform.scale_by(pygame.image.load(
+                'Assets/Ultimatebar/' + str(int(round(player_1.ultimate))) + " Ult " + player_1.user + ".png"), 4)
+            player_1.try_ult = False
+
+        if player_2.try_ult == True:
+            video(player_2.ultimatevideo, (WINDOW_WIDTH, WINDOW_HEIGHT), (0, 0))
+            print("P1 ult works")
+            player_2.ultimate = 0
+            player_2.ultbar = pygame.transform.scale_by(pygame.image.load(
+                'Assets/Ultimatebar/' + str(int(round(player_2.ultimate))) + " Ult " + player_2.user + ".png"), 4)
+            player_2.try_ult = False
+
+    def start_new_round(self):
+        # Reset variables
+        self.round_time = 0
+        self.frame_count = 0
+        #self.round_number += 1
+        print('new round')
+
+        # Clear particles
+
+
+    def pause_game(self, text, play_again):
+        # Draw text
+        self.game_over_text = self.font.render(text, True, (255, 255, 255))
         self.game_over_rect = self.game_over_text.get_rect()
-        self.game_over_rect.center = (WINDOW_WIDTH/2, WINDOW_HEIGHT/2)
+        self.game_over_rect.center = (WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
+
+        pygame.display.update()
+        while paused:
+            print('pause')
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        paused = False
+                if event.type == pygame.QUIT:
+                    paused = False
+                    running = False
+
+    def reset_game(self):
+        self.score = 0
+        self.start_new_round()
 
 
 class players(pygame.sprite.Sprite):
@@ -72,7 +142,6 @@ class players(pygame.sprite.Sprite):
         self.leftattack = pygame.image.load("Characters/" + character + "/sprites/" + character + "_Attack_Left.png")
         self.rightattack = pygame.image.load("Characters/" + character + "/sprites/" + character + "_Attack_Right.png")
         self.ultimatevideo = cv2.VideoCapture("Characters/" + character + "/videos/" + character + "_Ultimate_Video.mp4")
-        success, ultimate_image = self.ultimatevideo.read()
         self.image = self.rightimage
         self.rect = self.image.get_rect()
         self.rect.centerx = spawn
@@ -103,6 +172,7 @@ class players(pygame.sprite.Sprite):
         self.healthbar = pygame.image.load('Assets/Healthbar/' + str(int(round(self.health/10,0))) + " HP " + self.user + ".png")
         self.ultbar = pygame.transform.scale_by(pygame.image.load('Assets/Ultimatebar/' + str(int(round(self.ultimate))) + " Ult " + self.user + ".png"),4)
         self.playericon = pygame.transform.scale(pygame.image.load("Characters/" + character + "/sprites/" + character + "_Icon.png"),(160,160))
+        self.try_ult = False
 
 
     def update(self):
@@ -168,8 +238,8 @@ class players(pygame.sprite.Sprite):
         #Ultimate
         if keys[self.ULT] and self.ultimate == 100:
             print("try ult")
-            video(ultimate_image, ultimatevideo, (WINDOW_WIDTH, WINDOW_HEIGHT), (0, 0))
-            self.ultimate = 0
+            self.try_ult = True
+
 
 
         self.rect.x += self.xvelocity
@@ -177,10 +247,14 @@ class players(pygame.sprite.Sprite):
     def takeDamage(self, atk_type):
 
         if atk_type == "BASIC":
-            self.health -= 10
+            self.health -= 30
+            if self.health < 0:
+                self.health = 0
             print(self.user + " has " + str(self.health))
             if self.ultimate <= 100:
                 self.ultimate += 50
+            if self.ultimate > 100:
+                self.ultimate = 100
 
 
         self.healthbar = pygame.image.load(
@@ -217,10 +291,14 @@ songRect.midtop = (WINDOW_WIDTH/2, 0)
 songbgRect.topright = (WINDOW_WIDTH, 0)
 
 # Create a player group and player object
+my_game = Game
+my_game.start_new_round(my_game),
 keys = pygame.key.get_pressed()
 my_player_group = pygame.sprite.Group()
-player_1 = players(pygame.K_w, pygame.K_a, pygame.K_d, pygame.K_s, WINDOW_WIDTH / 3, "emu", pygame.K_r, "P1")
-player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 * WINDOW_WIDTH / 3, "bingo", pygame.K_m, "P2")
+player_1 = players(pygame.K_w, pygame.K_a, pygame.K_d, pygame.K_s, WINDOW_WIDTH / 3, "emu",
+                   pygame.K_r, "P1", pygame.K_t)
+player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 * WINDOW_WIDTH / 3, "bingo",
+                   pygame.K_m, "P2", pygame.K_COMMA)
 my_player_group.add(player_1)
 my_player_group.add(player_2)
 
@@ -243,7 +321,7 @@ while running:
             print('P1 Basic cooldown is up')
         if player_1.deal_damage == True:
             player_1.deal_damage = False
-            print(player_1.is_atkcooldown)
+            #print(player_1.is_atkcooldown)
             player_2.takeDamage(player_1.atk_type)
 
 
@@ -254,7 +332,7 @@ while running:
             print('P2 Basic cooldown is up')
         if player_2.deal_damage == True:
             player_2.deal_damage = False
-            print(player_2.is_atkcooldown)
+            #print(player_2.is_atkcooldown)
             player_1.takeDamage(player_2.atk_type)
 
         if event.type == player_1.P1_attack_anim:
@@ -292,7 +370,7 @@ while running:
 
 
     # Play Background
-    video(bg_image, bg, (WINDOW_WIDTH, WINDOW_HEIGHT), (0,0))
+    video(bg, (WINDOW_WIDTH, WINDOW_HEIGHT), (0,0))
 
     # Blit background
     display_surface.blit(pygame.transform.scale(player_1.healthbar,(249*2,66*2)), P1healthbarRect)
@@ -309,33 +387,7 @@ while running:
     my_player_group.update()
     my_player_group.draw(display_surface)
 
-    # Update
-    if player_1.health < 1:
-        try:
-            video(death_image, death, (160, 160), player_1.rect)
-            P1_death = greyscale(player_1.playericon)
-            display_surface.blit(pygame.transform.scale(P1_death, (iconcoord)), P1iconRect)
-            print('p1 dead')
-            player_1.kill()
-
-        except AttributeError:
-            display_surface.blit(pygame.transform.scale(P1_death, (iconcoord)), P1iconRect)
-
-    if player_2.health < 1:
-        try:
-            video(death_image, death, (160, 160), player_2.rect)
-            P2_death = greyscale(player_2.playericon)
-            display_surface.blit(pygame.transform.scale(P2_death, (iconcoord)), P2iconRect)
-            print('p2 dead')
-            player_2.kill()
-
-        except AttributeError:
-            display_surface.blit(pygame.transform.scale(P2_death, (iconcoord)), P2iconRect)
-
-
-    while paused:
-        print('pause')
-
+    my_game.update(my_game)
 
     # Update the display and tick clock
     pygame.display.update()
