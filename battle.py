@@ -63,7 +63,7 @@ class Game():
 
 class players(pygame.sprite.Sprite):
 
-    def __init__(self, jump, moveleft, moveright, crouch, spawn, character, attack, user):
+    def __init__(self, jump, moveleft, moveright, crouch, spawn, character, attack, user, ult):
         """Initialize the player"""
         super().__init__()
         #self.DEFAULT_IMAGE_SIZE = (160, 160)
@@ -71,6 +71,8 @@ class players(pygame.sprite.Sprite):
         self.leftimage = pygame.image.load("Characters/" + character + "/sprites/" + character + "_Face_Left.png")
         self.leftattack = pygame.image.load("Characters/" + character + "/sprites/" + character + "_Attack_Left.png")
         self.rightattack = pygame.image.load("Characters/" + character + "/sprites/" + character + "_Attack_Right.png")
+        self.ultimatevideo = cv2.VideoCapture("Characters/" + character + "/videos/" + character + "_Ultimate_Video.mp4")
+        success, ultimate_image = self.ultimatevideo.read()
         self.image = self.rightimage
         self.rect = self.image.get_rect()
         self.rect.centerx = spawn
@@ -86,6 +88,7 @@ class players(pygame.sprite.Sprite):
         self.MOVERIGHT = moveright
         self.CROUCH = crouch
         self.ATTACK = attack
+        self.ULT = ult
         #self.is_attack = False
         self.is_atkcooldown = False
         self.P1_ATTACKCOOLDOWN = pygame.USEREVENT + 1
@@ -95,8 +98,10 @@ class players(pygame.sprite.Sprite):
         self.deal_damage = False
         self.atk_type = ""
         self.health = 100
+        self.ultimate = 0
         self.user = user
         self.healthbar = pygame.image.load('Assets/Healthbar/' + str(int(round(self.health/10,0))) + " HP " + self.user + ".png")
+        self.ultbar = pygame.transform.scale_by(pygame.image.load('Assets/Ultimatebar/' + str(int(round(self.ultimate))) + " Ult " + self.user + ".png"),4)
         self.playericon = pygame.transform.scale(pygame.image.load("Characters/" + character + "/sprites/" + character + "_Icon.png"),(160,160))
 
 
@@ -153,10 +158,18 @@ class players(pygame.sprite.Sprite):
                 self.deal_damage = True
                 self.is_atkcooldown = True
                 if self.user == "P1":
-                    pygame.time.set_timer(self.P1_ATTACKCOOLDOWN, 2000)
+                    pygame.time.set_timer(self.P1_ATTACKCOOLDOWN, 1000)
                     print("P1 Basic cooldown started")
                 elif self.user == "P2":
-                    pygame.time.set_timer(self.P2_ATTACKCOOLDOWN, 2000)
+                    pygame.time.set_timer(self.P2_ATTACKCOOLDOWN, 1000)
+
+
+
+        #Ultimate
+        if keys[self.ULT] and self.ultimate == 100:
+            print("try ult")
+            video(ultimate_image, ultimatevideo, (WINDOW_WIDTH, WINDOW_HEIGHT), (0, 0))
+            self.ultimate = 0
 
 
         self.rect.x += self.xvelocity
@@ -164,11 +177,16 @@ class players(pygame.sprite.Sprite):
     def takeDamage(self, atk_type):
 
         if atk_type == "BASIC":
-            self.health -= 50
+            self.health -= 10
             print(self.user + " has " + str(self.health))
+            if self.ultimate <= 100:
+                self.ultimate += 50
+
 
         self.healthbar = pygame.image.load(
             'Assets/Healthbar/' + str(int(round(self.health / 10, 0))) + " HP " + self.user + ".png")
+        self.ultbar = pygame.transform.scale_by(pygame.image.load(
+            'Assets/Ultimatebar/' + str(int(round(self.ultimate))) + " Ult " + self.user + ".png"),4)
 
 
 class arena():
@@ -259,11 +277,17 @@ while running:
     P2healthbarRect.topright = (WINDOW_WIDTH,0)
 
 
+    P1ultbarRect = player_1.ultbar.get_rect()
+    P2ultbarRect = player_2.ultbar.get_rect()
+    P1ultbarRect.topleft = (P1healthbarRect.bottomleft)
+    P2ultbarRect.topright = (P2healthbarRect.bottomright)
+
+
     #ICON
     iconcoord = (80,80)
     P1iconRect = (pygame.transform.scale(player_1.playericon, (iconcoord)).get_rect())
     P2iconRect = (pygame.transform.scale(player_1.playericon, (iconcoord)).get_rect())
-    P1iconRect.topleft = (0+(WINDOW_WIDTH/200),WINDOW_HEIGHT/26.5)
+    P1iconRect.topleft = ((WINDOW_WIDTH/200),WINDOW_HEIGHT/26.5)
     P2iconRect.topright = (WINDOW_WIDTH-(WINDOW_WIDTH/200),WINDOW_HEIGHT/26.5)
 
 
@@ -273,6 +297,8 @@ while running:
     # Blit background
     display_surface.blit(pygame.transform.scale(player_1.healthbar,(249*2,66*2)), P1healthbarRect)
     display_surface.blit(pygame.transform.scale(player_2.healthbar,(249*2,66*2)), P2healthbarRect)
+    display_surface.blit(player_1.ultbar, P1ultbarRect)
+    display_surface.blit(player_2.ultbar, P2ultbarRect)
     display_surface.blit(pygame.transform.scale(player_1.playericon,(iconcoord)), P1iconRect)
     display_surface.blit(pygame.transform.scale(player_2.playericon,(iconcoord)), P2iconRect)
 
