@@ -32,15 +32,16 @@ def video(read, coords, blit, path):
     global video_loop
     video_loop = False
     try:
-
         success, param = read.read()
         surf = pygame.transform.scale(
             pygame.image.frombuffer(param.tobytes(), param.shape[1::-1], "BGR"),
             (coords))
         display_surface.blit(surf, blit)
     except AttributeError:
-        print(path)
-        print('teehee')
+        if param is None:
+            print('teehee')
+            read = cv2.VideoCapture(path)
+        #print(path)
         video_loop = True
 
 ## CLASSES ##
@@ -386,10 +387,8 @@ while running:
     P1iconRect.topleft = ((WINDOW_WIDTH/200),WINDOW_HEIGHT/26.5)
     P2iconRect.topright = (WINDOW_WIDTH-(WINDOW_WIDTH/200),WINDOW_HEIGHT/26.5)
 
-    while video_loop:
-
-        # Play Background
-        video(bg, (WINDOW_WIDTH, WINDOW_HEIGHT), (0,0),"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
+    # Play Background
+    video(bg, (WINDOW_WIDTH, WINDOW_HEIGHT), (0,0),"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
 
     # Blit background
     display_surface.blit(pygame.transform.scale(player_1.healthbar,(249*2,66*2)), P1healthbarRect)
