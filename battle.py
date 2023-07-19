@@ -25,24 +25,26 @@ pygame.display.set_caption("Scrimmage During Internship")
 FPS = 60
 clock = pygame.time.Clock()
 paused = False
-video_loop = True
+video_loop = 0
+param = None
+videoread = None
 
 def video(read, coords, blit, path):
     """Video player function"""
-    global video_loop
-    video_loop = False
-    try:
-        success, param = read.read()
+    global video_loop, param, videoread
+    if param is None:
+        videoread = cv2.VideoCapture(path)
+        success, param = videoread.read()
+        video_loop +=1
+    if param is not None:
+        success, param = videoread.read()
+        #print(videoread.read())
         surf = pygame.transform.scale(
             pygame.image.frombuffer(param.tobytes(), param.shape[1::-1], "BGR"),
             (coords))
         display_surface.blit(surf, blit)
-    except AttributeError:
-        if param is None:
-            print('teehee')
-            read = cv2.VideoCapture(path)
-        #print(path)
-        video_loop = True
+
+
 
 ## CLASSES ##
 
@@ -87,30 +89,38 @@ class Game():
                 player_2.kill()
 
             except AttributeError:
-                display_surface.blit(pygame.transform.scale(P2_death, (iconcoord)), P2iconRect)
+                #display_surface.blit(pygame.transform.scale(P2_death, (iconcoord)), P2iconRect)
                 my_game.start_new_round(my_game)
                 print('done')
 
-        print("p1: " + str(player_1.try_ult))
-        print("p2: " + str(player_2.try_ult))
+
 
         if player_1.try_ult == True:
-            video(P1ultimatevideo, (WINDOW_WIDTH,WINDOW_HEIGHT),(0,0),"Characters/" + player_1.character + "/videos/" + player_1.character + "_Ultimate_Video.mp4")
-            player_1.ultimate = 0
-            player_1.ultbar = pygame.transform.scale_by(pygame.image.load(
-                'Assets/Ultimatebar/' + str(int(round(player_1.ultimate))) + " Ult " + player_1.user + ".png"), 4)
-            if video_loop == True:
-                player_1.try_ult = False
+            try:
+                print("p1: " + str(player_1.try_ult))
+                print("p2: " + str(player_2.try_ult))
+                video(P1ultimatevideo, (WINDOW_WIDTH,WINDOW_HEIGHT),(0,0),"Characters/" + player_1.character + "/videos/" + player_1.character + "_Ultimate_Video.mp4")
+                if video_loop == True:
+                    player_1.try_ult = False
+            except AttributeError:
+                player_1.ultimate = 0
+                player_1.ultbar = pygame.transform.scale_by(pygame.image.load(
+                    'Assets/UI/Ultimatebar/' + str(int(round(player_1.ultimate))) + " Ult " + player_1.user + ".png"), 4)
+                print("vid over")
 
 
         if player_2.try_ult == True:
-
-            video(P2ultimatevideo, (WINDOW_WIDTH, WINDOW_HEIGHT),(0,0),"Characters/" + player_1.character + "/videos/" + player_1.character + "_Ultimate_Video.mp4")
-            player_2.ultimate = 0
-            player_2.ultbar = pygame.transform.scale_by(pygame.image.load(
-                'Assets/Ultimatebar/' + str(int(round(player_2.ultimate))) + " Ult " + player_2.user + ".png"), 4)
-            if video_loop == True:
-                player_2.try_ult = False
+            try:
+                print("p1: " + str(player_1.try_ult))
+                print("p2: " + str(player_2.try_ult))
+                video(P2ultimatevideo, (WINDOW_WIDTH, WINDOW_HEIGHT),(0,0),"Characters/" + player_2.character + "/videos/" + player_2.character + "_Ultimate_Video.mp4")
+                if video_loop == True:
+                    player_2.try_ult = False
+            except AttributeError:
+                player_2.ultimate = 0
+                player_2.ultbar = pygame.transform.scale_by(pygame.image.load(
+                    'Assets/UI/Ultimatebar/' + str(int(round(player_2.ultimate))) + " Ult " + player_2.user + ".png"), 4)
+                print("vid over2")
 
 
     def start_new_round(self):
@@ -183,8 +193,8 @@ class players(pygame.sprite.Sprite):
         self.health = 100
         self.ultimate = 0
         self.user = user
-        self.healthbar = pygame.image.load('Assets/Healthbar/' + str(int(round(self.health/10,0))) + " HP " + self.user + ".png")
-        self.ultbar = pygame.transform.scale_by(pygame.image.load('Assets/Ultimatebar/' + str(int(round(self.ultimate))) + " Ult " + self.user + ".png"),4)
+        self.healthbar = pygame.image.load('Assets/UI/Healthbar/' + str(int(round(self.health/10,0))) + " HP " + self.user + ".png")
+        self.ultbar = pygame.transform.scale_by(pygame.image.load('Assets/UI/Ultimatebar/' + str(int(round(self.ultimate))) + " Ult " + self.user + ".png"),4)
         self.playericon = pygame.transform.scale(pygame.image.load("Characters/" + character + "/sprites/" + character + "_Icon.png"),(160,160))
         self.try_ult = False
 
@@ -255,7 +265,6 @@ class players(pygame.sprite.Sprite):
             self.try_ult = True
 
 
-
         self.rect.x += self.xvelocity
 
     def takeDamage(self, atk_type):
@@ -272,9 +281,9 @@ class players(pygame.sprite.Sprite):
 
 
         self.healthbar = pygame.image.load(
-            'Assets/Healthbar/' + str(int(round(self.health / 10, 0))) + " HP " + self.user + ".png")
+            'Assets/UI/Healthbar/' + str(int(round(self.health / 10, 0))) + " HP " + self.user + ".png")
         self.ultbar = pygame.transform.scale_by(pygame.image.load(
-            'Assets/Ultimatebar/' + str(int(round(self.ultimate))) + " Ult " + self.user + ".png"),4)
+            'Assets/UI/Ultimatebar/' + str(int(round(self.ultimate))) + " Ult " + self.user + ".png"),4)
 
 
 class arena():
@@ -282,7 +291,7 @@ class arena():
 
 
 # Pick background
-bg = cv2.VideoCapture("Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
+bg = cv2.VideoCapture("Assets/Backgrounds/" + str(random.randint(2, 2)) + ".mp4")
 death = cv2.VideoCapture("Assets/death.mp4")
 
 #success, bg_image = bg.read()
@@ -318,9 +327,10 @@ player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 
 my_player_group.add(player_1)
 my_player_group.add(player_2)
 
-
-P1ultimatevideo = cv2.VideoCapture("Characters/" + player_1.character + "/videos/" + player_1.character + "_Ultimate_Video.mp4")
-P2ultimatevideo = cv2.VideoCapture("Characters/" + player_2.character + "/videos/" + player_2.character + "_Ultimate_Video.mp4")
+P1ultimatevideo = cv2.VideoCapture(
+    "Characters/" + player_1.character + "/videos/" + player_1.character + "_Ultimate_Video.mp4")
+P2ultimatevideo = cv2.VideoCapture(
+    "Characters/" + player_2.character + "/videos/" + player_2.character + "_Ultimate_Video.mp4")
 
 wait = 0
 # Main game loop
@@ -388,7 +398,7 @@ while running:
     P2iconRect.topright = (WINDOW_WIDTH-(WINDOW_WIDTH/200),WINDOW_HEIGHT/26.5)
 
     # Play Background
-    video(bg, (WINDOW_WIDTH, WINDOW_HEIGHT), (0,0),"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
+    #video(bg, (WINDOW_WIDTH, WINDOW_HEIGHT), (0,0),"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
 
     # Blit background
     display_surface.blit(pygame.transform.scale(player_1.healthbar,(249*2,66*2)), P1healthbarRect)
