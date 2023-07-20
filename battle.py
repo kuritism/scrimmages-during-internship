@@ -68,7 +68,7 @@ class Game():
         # Update
         if player_1.health < 1:
             try:
-                video(death, (160, 160), player_1.rect,"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
+                #video(death, (160, 160), player_1.rect,"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
                 P1_death = greyscale(player_1.playericon)
                 display_surface.blit(pygame.transform.scale(P1_death, (iconcoord)), P1iconRect)
                 # print('p1 dead')
@@ -82,7 +82,7 @@ class Game():
 
         if player_2.health < 1:
             try:
-                video(death, (160, 160), player_2.rect,"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
+                #video(death, (160, 160), player_2.rect,"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
                 P2_death = greyscale(player_2.playericon)
                 display_surface.blit(pygame.transform.scale(P2_death, (iconcoord)), P2iconRect)
                 # print('p2 dead')
@@ -99,29 +99,31 @@ class Game():
             try:
                 print("p1: " + str(player_1.try_ult))
                 print("p2: " + str(player_2.try_ult))
-                video(P1ultimatevideo, (WINDOW_WIDTH,WINDOW_HEIGHT),(0,0),"Characters/" + player_1.character + "/videos/" + player_1.character + "_Ultimate_Video.mp4")
+                #video(P1ultimatevideo, (WINDOW_WIDTH,WINDOW_HEIGHT),(0,0),"Characters/" + player_1.character + "/videos/" + player_1.character + "_Ultimate_Video.mp4")
                 if video_loop == True:
                     player_1.try_ult = False
             except AttributeError:
-                player_1.ultimate = 0
-                player_1.ultbar = pygame.transform.scale_by(pygame.image.load(
-                    'Assets/UI/Ultimatebar/' + str(int(round(player_1.ultimate))) + " Ult " + player_1.user + ".png"), 4)
                 print("vid over")
+
+            player_1.ultimate = 0
+            player_1.ultbar = pygame.transform.scale_by(pygame.image.load(
+                'Assets/UI/Ultimatebar/' + str(int(round(player_1.ultimate))) + " Ult " + player_1.user + ".png"), 4)
+
 
 
         if player_2.try_ult == True:
             try:
                 print("p1: " + str(player_1.try_ult))
                 print("p2: " + str(player_2.try_ult))
-                video(P2ultimatevideo, (WINDOW_WIDTH, WINDOW_HEIGHT),(0,0),"Characters/" + player_2.character + "/videos/" + player_2.character + "_Ultimate_Video.mp4")
+                #video(P2ultimatevideo, (WINDOW_WIDTH, WINDOW_HEIGHT),(0,0),"Characters/" + player_2.character + "/videos/" + player_2.character + "_Ultimate_Video.mp4")
                 if video_loop == True:
                     player_2.try_ult = False
             except AttributeError:
-                player_2.ultimate = 0
-                player_2.ultbar = pygame.transform.scale_by(pygame.image.load(
-                    'Assets/UI/Ultimatebar/' + str(int(round(player_2.ultimate))) + " Ult " + player_2.user + ".png"), 4)
-                print("vid over2")
 
+                print("vid over2")
+            player_2.ultimate = 0
+            player_2.ultbar = pygame.transform.scale_by(pygame.image.load(
+                'Assets/UI/Ultimatebar/' + str(int(round(player_2.ultimate))) + " Ult " + player_2.user + ".png"), 4)
 
     def start_new_round(self):
         # Reset variables
@@ -262,6 +264,8 @@ class players(pygame.sprite.Sprite):
         #Ultimate
         if keys[self.ULT] and self.ultimate == 100:
             print("try ult")
+            self.atk_type = "ULTIMATE"
+            self.deal_damage = True
             self.try_ult = True
 
 
@@ -271,14 +275,18 @@ class players(pygame.sprite.Sprite):
 
         if atk_type == "BASIC":
             self.health -= 30
-            if self.health < 0:
-                self.health = 0
-            print(self.user + " has " + str(self.health))
+
             if self.ultimate <= 100:
                 self.ultimate += 100
             if self.ultimate > 100:
                 self.ultimate = 100
+        elif atk_type == "ULTIMATE":
+            self.health -= 90
 
+
+        if self.health < 0:
+            self.health = 0
+        print(self.user + " has " + str(self.health))
 
         self.healthbar = pygame.image.load(
             'Assets/UI/Healthbar/' + str(int(round(self.health / 10, 0))) + " HP " + self.user + ".png")
@@ -399,6 +407,7 @@ while running:
 
     # Play Background
     #video(bg, (WINDOW_WIDTH, WINDOW_HEIGHT), (0,0),"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
+    display_surface.fill("purple")
 
     # Blit background
     display_surface.blit(pygame.transform.scale(player_1.healthbar,(249*2,66*2)), P1healthbarRect)
