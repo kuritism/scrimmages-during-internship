@@ -98,7 +98,7 @@ class Game():
         if player_1.try_ult == True:
             try:
                 print("p1: " + str(player_1.try_ult))
-                print("p2: " + str(player_2.try_ult))
+                print("p2:⠀" + str(player_2.try_ult))
                 #video(P1ultimatevideo, (WINDOW_WIDTH,WINDOW_HEIGHT),(0,0),"Characters/" + player_1.character + "/videos/" + player_1.character + "_Ultimate_Video.mp4")
                 if video_loop == True:
                     player_1.try_ult = False
@@ -159,7 +159,7 @@ class Game():
 
 class players(pygame.sprite.Sprite):
 
-    def __init__(self, jump, moveleft, moveright, crouch, spawn, character, attack, user, ult):
+    def __init__(self, jump, moveleft, moveright, crouch, spawn, character, attack, user, ult, dash):
         """Initialize the player"""
         super().__init__()
         #self.DEFAULT_IMAGE_SIZE = (160, 160)
@@ -184,12 +184,16 @@ class players(pygame.sprite.Sprite):
         self.CROUCH = crouch
         self.ATTACK = attack
         self.ULT = ult
+        self.DASH = dash
         #self.is_attack = False
         self.is_atkcooldown = False
         self.P1_ATTACKCOOLDOWN = pygame.USEREVENT + 1
         self.P2_ATTACKCOOLDOWN = pygame.USEREVENT + 2
         self.P1_attack_anim = pygame.USEREVENT + 3
         self.P2_attack_anim = pygame.USEREVENT + 4
+        self.P1_DASHCOOLDOWN = pygame.USEREVENT + 5
+        self.P2_DASHCOOLDOWN = pygame.USEREVENT + 6
+        self.is_dashcooldown = False
         self.deal_damage = False
         self.atk_type = ""
         self.health = 100
@@ -207,20 +211,44 @@ class players(pygame.sprite.Sprite):
         self.xvelocity = 0
 
         # Move left and right
-        if keys[self.MOVELEFT] and self.rect.left > 0:
-            self.xvelocity = -6
-            self.image = self.leftimage
-        if keys[self.MOVERIGHT] and self.rect.right < WINDOW_WIDTH:
-            self.xvelocity = 6
-            self.image = self.rightimage
-        if keys[self.JUMP] and self.rect.bottom == WINDOW_HEIGHT:
+        if keys[self.MOVELEFT] or keys[self.MOVERIGHT]:
+            P = (1 / 30) * self.m * (self.yvelocity ** 2)
+            self.rect.y -= P
+            self.yvelocity -= 1
+            if self.yvelocity < 0:
+                self.m = -1
+
+            if keys[self.MOVELEFT] and self.rect.left > 0:
+                self.xvelocity = -10
+                self.image = self.leftimage
+            if keys[self.MOVERIGHT] and self.rect.right < WINDOW_WIDTH:
+                self.xvelocity = 10
+                self.image = self.rightimage
+        if keys[self.JUMP] and self.rect.bottom >= WINDOW_HEIGHT - 10:
             self.is_jump = True
         if keys[self.CROUCH] and not self.is_jump:
             self.crouching = True
 
+
+        # Dash
+        if self.is_dashcooldown == False and keys[self.DASH]:
+            print(self.user + " Dash")
+            if keys[self.MOVELEFT]:
+                self.rect.x -= 200
+
+            elif keys[self.MOVERIGHT]:
+                self.rect.x += 200
+
+
+            if self.user == "P1":
+                pygame.time.set_timer(self.P1_DASHCOOLDOWN, 2000)
+            if self.user == "P2":
+                pygame.time.set_timer(self.P2_DASHCOOLDOWN, 2000)
+            self.is_dashcooldown = True
+
         # Jump
         if self.is_jump:
-            F = (1 / 2) * self.m * (self.yvelocity ** 2)
+            F = (1 / 3) * self.m * (self.yvelocity ** 2)
             self.rect.y -= F
             self.yvelocity -= 1
             if self.yvelocity < 0:
@@ -258,6 +286,7 @@ class players(pygame.sprite.Sprite):
                     print("P1 Basic cooldown started")
                 elif self.user == "P2":
                     pygame.time.set_timer(self.P2_ATTACKCOOLDOWN, 1000)
+                    print("P2 Basic cooldown started")
 
 
 
@@ -329,9 +358,9 @@ my_game.start_new_round(my_game),
 keys = pygame.key.get_pressed()
 my_player_group = pygame.sprite.Group()
 player_1 = players(pygame.K_w, pygame.K_a, pygame.K_d, pygame.K_s, WINDOW_WIDTH / 3, "emu",
-                   pygame.K_r, "P1", pygame.K_t)
+                   pygame.K_r, "P1", pygame.K_t, pygame.K_LSHIFT)
 player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 * WINDOW_WIDTH / 3, "bingo",
-                   pygame.K_m, "P2", pygame.K_COMMA)
+                   pygame.K_m, "P2", pygame.K_COMMA, pygame.K_KP0)
 my_player_group.add(player_1)
 my_player_group.add(player_2)
 
@@ -367,10 +396,22 @@ while running:
             player_2.deal_damage = False
             pygame.time.set_timer(player_2.P2_ATTACKCOOLDOWN, 0)
             print('P2 Basic cooldown is up')
+
         if player_2.deal_damage == True:
             player_2.deal_damage = False
             #print(player_2.is_atkcooldown)
             player_1.takeDamage(player_2.atk_type)
+
+        if event.type == player_1.P1_DASHCOOLDOWN:
+            player_1.is_dashcooldown = False
+            pygame.time.set_timer(player_1.P1_DASHCOOLDOWN, 0)
+            print("P1 Dash cooldown is up")
+
+        if event.type == player_2.P2_DASHCOOLDOWN:
+            player_2.is_dashcooldown = False
+            pygame.time.set_timer(player_2.P2_DASHCOOLDOWN, 0)
+            print("P2 Dash cooldown is up")
+
 
         if event.type == player_1.P1_attack_anim:
             if player_1.image == player_1.rightattack:
