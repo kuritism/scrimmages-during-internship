@@ -1,8 +1,11 @@
-"""WHERE DID TE BUTTONS GO"""
+"""WHERE DID TE BACKGROUND GO"""
 
 # Imports
 import tkinter
+from tkinter import DISABLED
 from PIL import Image, ImageTk
+import os
+
 
 # Define window
 root = tkinter.Tk()
@@ -10,40 +13,59 @@ root.resizable(False, False)
 root.attributes('-fullscreen', True)
 bg = Image.open('Assets/UI/Character Selection/Player 1 Select.png')
 tk_bg = ImageTk.PhotoImage(bg)
-label = tkinter.Label(root, image=tk_bg)
-label.grid(row=0, column=0)
-e = 0
+play = Image.open("Assets/UI/Character Selection/Start.png")
+tk_play = ImageTk.PhotoImage(play.resize((160,90)))
 
-fart = ["bingo", "emu", "petticoat", "tbh"]
+label = tkinter.Label(root, image=tk_bg, bd=0)
+label.grid(row=0, column=0, columnspan=4, rowspan=4)
+button_frame = tkinter.Frame(root, width=271*4, height=271)
+button_frame.grid(row=0, column=0)
 
-def what():
-    global bg, tk_bg, e
-    print('lesgo')
-    if e == 0:
+playbutton = tkinter.Label(root, image=tk_play, bd=0)
+playbutton.grid(row=0, column=0, sticky="SE")
+
+# Set values
+var = 0
+x = 0
+y = 0
+buttons = []
+select = []
+
+
+def what(event):
+    global bg, tk_bg, var
+    print(event)
+
+    if var == 0:
         bg = Image.open('Assets/UI/Character Selection/Player 2 Select.png')
         tk_bg = ImageTk.PhotoImage(bg)
         label.config(image=tk_bg)
         label.grid(row=0, column=0)
     else:
+        for widget in buttons:
+            widget.config(state=DISABLED)
         print("all done")
-    e += 1
+    var += 1
 
-def func(character):
-    global image, tk_image, fart
 
+for char in os.listdir("Characters"):
     # Get image
-    image = Image.open(f'Characters/{character}/sprites/{character}_Icon.png')
-    tk_image = ImageTk.PhotoImage(image.resize((256, 256)))
+    try:
+        image = Image.open(f'Characters/{char}/sprites/{char}_Icon.png')
+        print("Imported Character:", char)
+        tk_image = ImageTk.PhotoImage(image.resize((256, 256)))
 
-    # Put on button
-    button = tkinter.Button(root, image=tk_image, command=lambda:what)
-    button.image = tk_image
-    button.grid(row=1, column=fart.index(character), padx=10, pady=10)
+        # Put on button
+        button = tkinter.Button(button_frame, image=tk_image, bd=8)
+        button.image = tk_image
+        button.place(x=x, y=y)
+        buttons.append(button)
+        x += 271
 
+    except FileNotFoundError:  # if file does not exist
+        print(f"Error: {char} is missing sprites")
 
-# Call function
-for char in fart:
-    func(char)
+root.bind('<Button-1>', what)
 
 # Run the man loop
 root.mainloop()
