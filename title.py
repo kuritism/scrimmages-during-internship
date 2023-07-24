@@ -12,7 +12,7 @@ WINDOW_HEIGHT = display_info.current_h
 display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
 # Draw
-background = pygame.image.load('Assets/UI/Home Menu/Home Background.png')
+background = pygame.image.load('Assets/UI/Home Menu/Titlescreen.png')
 background_rect = background.get_rect()
 background_rect.topleft = (0, 0)
 
@@ -34,6 +34,7 @@ creditz_rect.bottomleft = (0, WINDOW_HEIGHT)
 
 # Main game loop
 running = True
+clicked = False
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -41,9 +42,10 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x = event.pos[0]
             mouse_y = event.pos[1]
-
+            clicked = True
             if play_rect.collidepoint(mouse_x, mouse_y):
                 print('play')
+                exec(open('selection.py').read())
             elif settings_rect.collidepoint(mouse_x, mouse_y):
                 print('settings')
             elif creditz_rect.collidepoint(mouse_x, mouse_y):
@@ -51,10 +53,14 @@ while running:
 
     # Blit
     display_surface.blit(background, background_rect)
-    display_surface.blit(menu, menu_rect)
-    display_surface.blit(play, play_rect)
-    display_surface.blit(settings, settings_rect)
-    display_surface.blit(creditz, creditz_rect)
+
+    if clicked:
+        background = pygame.image.load('Assets/UI/Home Menu/Home Background.png')
+        display_surface.blit(background, background_rect)
+        display_surface.blit(menu, menu_rect)
+        display_surface.blit(play, play_rect)
+        display_surface.blit(settings, settings_rect)
+        display_surface.blit(creditz, creditz_rect)
 
     # Update the display
     pygame.display.update()
