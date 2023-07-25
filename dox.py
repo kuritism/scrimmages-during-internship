@@ -51,7 +51,6 @@ def get_location():
 
 def get_specs():
     gpu_count = 1
-    place_gpu = {}
     gpus = GPUtil.getGPUs()
     spec_data = {
         "platform": platform.system(),

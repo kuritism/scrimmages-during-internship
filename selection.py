@@ -13,30 +13,80 @@ display_info = pygame.display.Info()
 WINDOW_WIDTH = display_info.current_w
 WINDOW_HEIGHT = display_info.current_h
 display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+pygame.display.set_caption("Choose your Character")
 
 # Set values
 x = 115
 y = 145
-select = []
+char_select = []
 
 
+class Icon:
+    def __init__(self, chara):
+        self.image = pygame.transform.scale(pygame.image.load(f'Characters/{chara}/sprites/{chara}_Icon.png'), (60, 60))
+        self.rect = self.image.get_rect()
+        self.count = 1
+
+    def myfunc(self, mouse_x, mouse_y):
+        if self.rect.collidepoint(mouse_x, mouse_y):
+            return True
+
+    def blitfunc(self):
+        self.lastrect = self.image.get_rect()
+        if self.count == 1:
+            self.lastrect.topleft = (0, WINDOW_HEIGHT)
+
+        display_surface.blit(self.image, self.lastrect)
+
+
+bingo = Icon("bingo")
+emu = Icon("emu")
+petticoat = Icon("petticoat")
+tbh = Icon("tbh")
+chars = [bingo, emu, petticoat, tbh]
+char_count = 0
 
 for char in os.listdir("Characters"):
     # Get image
     try:
-        image = pygame.image.load(f'Characters/{char}/sprites/{char}_Icon.png')
+        # image = pygame.image.load(f'Characters/{char}/sprites/{char}_Icon.png')
+        char_select.append(char)
+        print(char)
+        char_select[char_count] = Icon(char)
         print("Imported Character:", char)
+        char_count += 1
+        # char = Icon(str(char))
+
 
     except FileNotFoundError:  # if file does not exist
         print(f"Error: {char} is missing sprites")
 
+background = pygame.image.load('Assets/UI/Character Selection/Player 1 Select.png')
+background_rect = background.get_rect()
+background_rect.topleft = (0, 0)
+
+play = pygame.transform.scale(pygame.image.load('Assets/UI/Character Selection/Start.png'), (600, 300))
+play_rect = play.get_rect()
+play_rect.bottomright = (WINDOW_WIDTH, WINDOW_HEIGHT)
+
+# Main loop
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        display_surface.blit(background, background_rect)
+    if event.type == pygame.MOUSEBUTTONDOWN:
+        if bingo.myfunc(event.pos[0], event.pos[1]) or \
+                emu.myfunc(event.pos[0], event.pos[1]) or \
+                petticoat.myfunc(event.pos[0], event.pos[1]) or \
+                tbh.myfunc(event.pos[0], event.pos[1]):
+            display_surface.blit(play, play_rect)
+            print('hi')
 
-    #display_surface.blit()
+    # Blit images
+    for e in chars:
+        e.blitfunc()
 
     # Update display
     pygame.display.update()

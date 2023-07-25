@@ -10,6 +10,9 @@ from tinytag import TinyTag
 from hollow import textOutline
 from grayfunc import greyscale
 
+#from selection import char_select
+char_select = ["emu", "bingo"]
+
 # Initialize
 pygame.init()
 mixer.init()
@@ -174,7 +177,9 @@ class players(pygame.sprite.Sprite):
         self.rect.bottom = WINDOW_HEIGHT
         self.yvelocity = 8
         self.xvelocity = 0
+        self.walkvelocity = 8
         self.m = 1
+        self.wm = 1
         self.is_jump = False
         self.crouching = False
         self.crouch_height = WINDOW_HEIGHT + 90
@@ -207,27 +212,38 @@ class players(pygame.sprite.Sprite):
 
     def update(self):
         """Update the player"""
+        global walkbob
+        walkbob = 0
         keys = pygame.key.get_pressed()
         self.xvelocity = 0
-
         # Move left and right
-        if keys[self.MOVELEFT] or keys[self.MOVERIGHT]:
-            P = (1 / 30) * self.m * (self.yvelocity ** 2)
-            self.rect.y -= P
-            self.yvelocity -= 1
-            if self.yvelocity < 0:
-                self.m = -1
+        if keys[self.MOVELEFT] or keys[self.MOVERIGHT] and not self.is_jump:
+            walkbob = (1 / 30) * self.wm * (self.yvelocity ** 2)
+            self.rect.y -= walkbob
+            self.walkvelocity -= 1
+            if self.walkvelocity < 0:
+                self.wm = -1
+            if self.rect.bottom >= WINDOW_HEIGHT + walkbob:
+                self.walkvelocity = 8
+                self.wm = 1
+        elif self.rect.bottom < WINDOW_WIDTH:
+            self.rect.y +=4
 
-            if keys[self.MOVELEFT] and self.rect.left > 0:
-                self.xvelocity = -10
-                self.image = self.leftimage
-            if keys[self.MOVERIGHT] and self.rect.right < WINDOW_WIDTH:
-                self.xvelocity = 10
-                self.image = self.rightimage
-        if keys[self.JUMP] and self.rect.bottom >= WINDOW_HEIGHT - 10:
+
+        #fall down when no move
+
+        if keys[self.MOVELEFT] and self.rect.left > 0:
+            self.xvelocity = -12
+            self.image = self.leftimage
+        elif keys[self.MOVERIGHT] and self.rect.right < WINDOW_WIDTH:
+            self.xvelocity = 12
+            self.image = self.rightimage
+        if keys[self.JUMP] and self.rect.bottom >= WINDOW_HEIGHT - 20:
             self.is_jump = True
+
         if keys[self.CROUCH] and not self.is_jump:
             self.crouching = True
+
 
 
         # Dash
@@ -248,7 +264,7 @@ class players(pygame.sprite.Sprite):
 
         # Jump
         if self.is_jump:
-            F = (1 / 3) * self.m * (self.yvelocity ** 2)
+            F = (1 / 3) * self.m * (self.yvelocity ** 2)*2
             self.rect.y -= F
             self.yvelocity -= 1
             if self.yvelocity < 0:
@@ -258,6 +274,7 @@ class players(pygame.sprite.Sprite):
             self.yvelocity = 8
             self.rect.bottom = WINDOW_HEIGHT
             self.m = 1
+
 
         # Crouch
         if self.crouching:
@@ -357,9 +374,9 @@ my_game = Game
 my_game.start_new_round(my_game),
 keys = pygame.key.get_pressed()
 my_player_group = pygame.sprite.Group()
-player_1 = players(pygame.K_w, pygame.K_a, pygame.K_d, pygame.K_s, WINDOW_WIDTH / 3, "emu",
+player_1 = players(pygame.K_w, pygame.K_a, pygame.K_d, pygame.K_s, WINDOW_WIDTH / 3, char_select[0],
                    pygame.K_r, "P1", pygame.K_t, pygame.K_LSHIFT)
-player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 * WINDOW_WIDTH / 3, "bingo",
+player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 * WINDOW_WIDTH / 3, char_select[1],
                    pygame.K_m, "P2", pygame.K_COMMA, pygame.K_KP0)
 my_player_group.add(player_1)
 my_player_group.add(player_2)
