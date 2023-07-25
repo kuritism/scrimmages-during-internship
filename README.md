@@ -12,6 +12,6 @@ use socket for multiplayer !!!!
 # Development Prospects
 holding off: ultimate video, bg video, animations(~~Attack~~, ability, ultimate, ~~death~~, taking damage)  
 step 1: ~~moving sprites, gravity,~~ ~~wasd/arrow keybinds~~  
-step 2: ~~character multiplayer~~, ~~hp~~, ~~attack~~, ~~ultimate system~~, bacteria characters, bacteria ultimate boosts,  game over text  
-step 3: sound, ~~background/bgm~~, arena, multiple platforms, ~~custom resolution~~, ui, knockback?, healing particles  
-step 4: ~~home screen~~, character selection, game mode selection(timer, stock based, etc), customizable keybinds, online pvp compatiblity :3
+step 2: ~~character multiplayer~~, ~~hp~~, ~~attack~~, ~~ultimate system~~, bacteria characters, bacteria ultimate boosts,  game over text, character selection  
+step 3: ~~background/bgm~~, ~~custom resolution~~, sound, arena, multiple platforms, ui, knockback?, healing particles  
+step 4: ~~home screen~~, game mode selection(timer, stock based, etc), customizable keybinds, online pvp compatiblity :3
