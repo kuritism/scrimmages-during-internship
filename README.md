@@ -3,7 +3,7 @@
 Will feature many skrunklies
 https://code-with-me.global.jetbrains.com/Z5OvA0RW-HHa3Yem9GDgbA#p=PC&fp=411D7C020F19EEDA8F2765D89B302BA88213BC515D5589990660381CFFC53A16
 # TO DO
-edit bingo and tbh ultimate video 
+edit tbh ultimate video 
 use socket for multiplayer !!!!  
 
 
