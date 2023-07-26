@@ -2,6 +2,7 @@
 # Imports
 import pygame
 import ctypes
+from itertools import cycle
 
 # Initialize
 pygame.init()
@@ -33,10 +34,12 @@ creditz = pygame.transform.scale_by(pygame.image.load('Assets/UI/Home Menu/Home 
 creditz_rect = creditz.get_rect()
 creditz_rect.bottomleft = (0, WINDOW_HEIGHT)
 
+
 # Main game loop
 window = False
 running = True
 clicked = False
+
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -47,7 +50,7 @@ while running:
             clicked = True
             if play_rect.collidepoint(mouse_x, mouse_y):
                 print('play')
-                exec(open('selection.py').read())
+                exec(open('battle.py').read())
             elif settings_rect.collidepoint(mouse_x, mouse_y):
                 print('settings')
             elif creditz_rect.collidepoint(mouse_x, mouse_y):
@@ -61,6 +64,7 @@ while running:
             ctypes.windll.user32.MessageBoxW(0, "This game was made in mind to be played in a healthy manner! This "
                                                 "game will regularly pause the game at intervals for water breaks and "
                                                 "give out reminders during long playtime!", "Notice!", 1)
+
             window = True
         background = pygame.image.load('Assets/UI/Home Menu/Home Background.png')
         display_surface.blit(background, background_rect)

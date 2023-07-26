@@ -10,8 +10,9 @@ from tinytag import TinyTag
 from hollow import textOutline
 from grayfunc import greyscale
 
+exec(open('selection.py').read())
 #from selection import char_select
-char_select = ["emu", "bingo"]
+#char_select = ["emu", "bingo"]
 
 # Initialize
 pygame.init()
@@ -374,9 +375,9 @@ my_game = Game
 my_game.start_new_round(my_game),
 keys = pygame.key.get_pressed()
 my_player_group = pygame.sprite.Group()
-player_1 = players(pygame.K_w, pygame.K_a, pygame.K_d, pygame.K_s, WINDOW_WIDTH / 3, char_select[0],
+player_1 = players(pygame.K_w, pygame.K_a, pygame.K_d, pygame.K_s, WINDOW_WIDTH / 3, str(char_select[0]),
                    pygame.K_r, "P1", pygame.K_t, pygame.K_LSHIFT)
-player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 * WINDOW_WIDTH / 3, char_select[1],
+player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 * WINDOW_WIDTH / 3, str(char_select[1]),
                    pygame.K_m, "P2", pygame.K_COMMA, pygame.K_KP0)
 my_player_group.add(player_1)
 my_player_group.add(player_2)

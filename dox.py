@@ -95,3 +95,15 @@ final.update(get_specs())
 final.update(get_storage())
 
 print(final)
+
+
+
+till_i = False
+
+while not till_i:
+    she(on_my)
+
+
+
+
+
