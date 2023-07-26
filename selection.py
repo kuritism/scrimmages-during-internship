@@ -25,6 +25,8 @@ count = 0
 class Icon:
     def __init__(self, chara):
         self.image = pygame.transform.scale(pygame.image.load(f'Characters/{chara}/sprites/{chara}_Icon.png'), (240, 240))
+        self.preview = pygame.transform.scale(pygame.image.load(f'Characters/{chara}/sprites/{chara}_Face_Left.png'), (240, 240))
+        self.previewrect = self.preview.get_rect()
         self.rect = self.image.get_rect()
         self.count = 1
         self.gcount = 1
@@ -79,30 +81,39 @@ play = pygame.transform.scale(pygame.image.load('Assets/UI/Character Selection/S
 play_rect = play.get_rect()
 play_rect.bottomright = (WINDOW_WIDTH, WINDOW_HEIGHT)
 
+selected = pygame.transform.scale(pygame.image.load('Characters/bingo/sprites/bingo_Icon.png'), (240, 240))
+selected_rect = selected.get_rect()
+selected_rect.midright = (WINDOW_WIDTH, WINDOW_HEIGHT/2)
+
 # Main loop
 running = True
-ready = False
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         for e in chars:
             if e.myfunc(pygame.mouse.get_pos()):
+                # Click on character
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     char_select.append(e.chara)
                     clickcount += 1
                     background = pygame.image.load('Assets/UI/Character Selection/Player 2 Select.png')
                     background_rect = background.get_rect()
                     pygame.display.update()
-                print('hove')
+
+                # Hovering
+                selected = pygame.transform.scale(pygame.image.load(f'Characters/{e.chara}/sprites/{e.chara}_Icon.png'), (240, 240))
+
+                display_surface.blit(e.preview, selected_rect)
+                selected_rect.midright = (WINDOW_WIDTH, WINDOW_HEIGHT / 2)
 
             if play_rect.collidepoint(pygame.mouse.get_pos()):
                 running = False
 
-
+    # Background
     display_surface.blit(background, background_rect)
 
-    # Blit images
+    # Blit icons
     for e in chars:
         e.blitfunc()
 
