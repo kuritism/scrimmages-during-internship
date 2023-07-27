@@ -4,6 +4,7 @@
 import cv2
 import pygame
 import random
+from pyvidplayer import Video
 
 from pygame import mixer, font
 from tinytag import TinyTag
@@ -29,11 +30,13 @@ pygame.display.set_caption("Scrimmage During Internship")
 FPS = 60
 clock = pygame.time.Clock()
 paused = False
-video_loop = 0
-param = None
-videoread = None
 
-def video(read, coords, blit, path):
+#restart_death = True
+'''video_loop = 0
+param = None
+videoread = None'''
+
+'''def video(read, coords, blit, path):
     """Video player function"""
     global video_loop, param, videoread
     if param is None:
@@ -46,9 +49,10 @@ def video(read, coords, blit, path):
         surf = pygame.transform.scale(
             pygame.image.frombuffer(param.tobytes(), param.shape[1::-1], "BGR"),
             (coords))
-        display_surface.blit(surf, blit)
+        display_surface.blit(surf, blit)'''
 
-
+P1_death = pygame.surface.Surface
+P2_death = pygame.surface.Surface
 
 ## CLASSES ##
 
@@ -56,14 +60,18 @@ class Game():
 
     def __init__(self, player):
         """Initialize the game"""
+
         self.player = player
         self.frame_count = 0
         self.round_time = 0
         self.round_number = 0
         self.score = 0
+        self.restart_death = True
 
     def update(self):
         """Update the game object"""
+        global P1_death, P2_death
+
         self.frame_count += 1
         if self.frame_count == FPS:
             self.round_time += 1
@@ -73,6 +81,10 @@ class Game():
         if player_1.health < 1:
             try:
                 #video(death, (160, 160), player_1.rect,"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
+                if self.restart_death:
+                    deathvideo.restart()
+                    self.restart_death = False
+                deathvideo.draw(display_surface, (player_1.rect), force_draw=False)
                 P1_death = greyscale(player_1.playericon)
                 display_surface.blit(pygame.transform.scale(P1_death, (iconcoord)), P1iconRect)
                 # print('p1 dead')
@@ -80,13 +92,17 @@ class Game():
 
 
             except AttributeError:
+                deathvideo.close()
                 display_surface.blit(pygame.transform.scale(P1_death, (iconcoord)), P1iconRect)
                 my_game.start_new_round(my_game)
                 print('done')
-
         if player_2.health < 1:
             try:
                 #video(death, (160, 160), player_2.rect,"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
+                if self.restart_death:
+                    deathvideo.restart()
+                    self.restart_death = False
+                deathvideo.draw(display_surface, (player_2.rect), force_draw=False)
                 P2_death = greyscale(player_2.playericon)
                 display_surface.blit(pygame.transform.scale(P2_death, (iconcoord)), P2iconRect)
                 # print('p2 dead')
@@ -103,11 +119,14 @@ class Game():
             try:
                 print("p1: " + str(player_1.try_ult))
                 print("p2:⠀" + str(player_2.try_ult))
+                player_1.ultvideo.draw(display_surface, (0,0), force_draw=False)
                 #video(P1ultimatevideo, (WINDOW_WIDTH,WINDOW_HEIGHT),(0,0),"Characters/" + player_1.character + "/videos/" + player_1.character + "_Ultimate_Video.mp4")
-                if video_loop == True:
-                    player_1.try_ult = False
+
+
             except AttributeError:
+                #player_1.try_ult = False
                 print("vid over")
+                #player_1.ultvideo.close()
 
             player_1.ultimate = 0
             player_1.ultbar = pygame.transform.scale_by(pygame.image.load(
@@ -119,11 +138,13 @@ class Game():
             try:
                 print("p1: " + str(player_1.try_ult))
                 print("p2: " + str(player_2.try_ult))
+                player_2.ultvideo.draw(display_surface, (0,0), force_draw=False)
                 #video(P2ultimatevideo, (WINDOW_WIDTH, WINDOW_HEIGHT),(0,0),"Characters/" + player_2.character + "/videos/" + player_2.character + "_Ultimate_Video.mp4")
-                if video_loop == True:
-                    player_2.try_ult = False
-            except AttributeError:
 
+
+            except AttributeError:
+                #player_2.try_ult = False
+                #player_2.ultvideo.close()
                 print("vid over2")
             player_2.ultimate = 0
             player_2.ultbar = pygame.transform.scale_by(pygame.image.load(
@@ -144,7 +165,7 @@ class Game():
         self.game_over_text = self.font.render(text, True, (255, 255, 255))
         self.game_over_rect = self.game_over_text.get_rect()
         self.game_over_rect.center = (WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
-
+        print('?!?')
         pygame.display.update()
         while paused:
             print('pause')
@@ -167,10 +188,11 @@ class players(pygame.sprite.Sprite):
         """Initialize the player"""
         super().__init__()
         #self.DEFAULT_IMAGE_SIZE = (160, 160)
-        self.rightimage = pygame.image.load("Characters/" + character + "/sprites/" + character + "_Face_Right.png")
-        self.leftimage = pygame.image.load("Characters/" + character + "/sprites/" + character + "_Face_Left.png")
-        self.leftattack = pygame.image.load("Characters/" + character + "/sprites/" + character + "_Attack_Left.png")
-        self.rightattack = pygame.image.load("Characters/" + character + "/sprites/" + character + "_Attack_Right.png")
+        self.rightimage = pygame.image.load(f"Characters/{character}/sprites/{character}_Face_Right.png")
+        self.leftimage = pygame.image.load(f"Characters/{character}/sprites/{character}_Face_Left.png")
+        self.leftattack = pygame.image.load(f"Characters/{character}/sprites/{character}_Attack_Left.png")
+        self.rightattack = pygame.image.load(f"Characters/{character}/sprites/{character}_Attack_Right.png")
+        self.ultvideo = Video(f"Characters/{character}/videos/{character}_Ultimate_Video.mp4")
         self.character = character
         self.image = self.rightimage
         self.rect = self.image.get_rect()
@@ -314,6 +336,8 @@ class players(pygame.sprite.Sprite):
             self.atk_type = "ULTIMATE"
             self.deal_damage = True
             self.try_ult = True
+            self.ultvideo.restart()
+            self.ultvideo.resume()
 
 
         self.rect.x += self.xvelocity
@@ -347,8 +371,7 @@ class arena():
 
 # Pick background
 bg = cv2.VideoCapture("Assets/Backgrounds/" + str(random.randint(2, 2)) + ".mp4")
-death = cv2.VideoCapture("Assets/death.mp4")
-
+deathvideo = Video("Assets/death.mp4")
 #success, bg_image = bg.read()
 #success, death_image = death.read()
 #success, player1.ultimate_image = player1.ultimate_video.read()
@@ -382,10 +405,10 @@ player_2 = players(pygame.K_UP, pygame.K_LEFT, pygame.K_RIGHT, pygame.K_DOWN, 2 
 my_player_group.add(player_1)
 my_player_group.add(player_2)
 
-P1ultimatevideo = cv2.VideoCapture(
-    "Characters/" + player_1.character + "/videos/" + player_1.character + "_Ultimate_Video.mp4")
-P2ultimatevideo = cv2.VideoCapture(
-    "Characters/" + player_2.character + "/videos/" + player_2.character + "_Ultimate_Video.mp4")
+#P1ultimatevideo = cv2.VideoCapture(
+#    "Characters/" + player_1.character + "/videos/" + player_1.character + "_Ultimate_Video.mp4")
+#P2ultimatevideo = cv2.VideoCapture(
+#    "Characters/" + player_2.character + "/videos/" + player_2.character + "_Ultimate_Video.mp4")
 
 wait = 0
 # Main game loop

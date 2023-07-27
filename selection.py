@@ -3,6 +3,7 @@
 # Imports
 import pygame
 import os
+from rotatefix import rot_center
 from grayfunc import greyscale
 
 # Initialize
@@ -83,35 +84,43 @@ play_rect.bottomright = (WINDOW_WIDTH, WINDOW_HEIGHT)
 
 selected = pygame.transform.scale(pygame.image.load('Characters/bingo/sprites/bingo_Icon.png'), (240, 240))
 selected_rect = selected.get_rect()
-selected_rect.midright = (WINDOW_WIDTH, WINDOW_HEIGHT/2)
+selected_rect.midright = (8*WINDOW_WIDTH/9, WINDOW_HEIGHT/2)
 
 # Main loop
 running = True
+current = bingo
 while running:
+
+    # Background
+    display_surface.blit(background, background_rect)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
         for e in chars:
-            if e.myfunc(pygame.mouse.get_pos()):
-                # Click on character
+            if e.rect.collidepoint(pygame.mouse.get_pos()):
                 if event.type == pygame.MOUSEBUTTONDOWN:
+                    # Click on character
                     char_select.append(e.chara)
                     clickcount += 1
                     background = pygame.image.load('Assets/UI/Character Selection/Player 2 Select.png')
                     background_rect = background.get_rect()
                     pygame.display.update()
+                else:
+                    # Hovering
+                    print('hover')
+                    selected = pygame.transform.scale(pygame.image.load(f'Characters/{e.chara}/sprites/{e.chara}_Icon.png'),
+                                                      (240, 240))
+                    current = e
 
-                # Hovering
-                selected = pygame.transform.scale(pygame.image.load(f'Characters/{e.chara}/sprites/{e.chara}_Icon.png'), (240, 240))
+        if event.type == pygame.MOUSEBUTTONDOWN and play_rect.collidepoint(pygame.mouse.get_pos()):
+            running = False
 
-                display_surface.blit(e.preview, selected_rect)
-                selected_rect.midright = (WINDOW_WIDTH, WINDOW_HEIGHT / 2)
+    current.preview = rot_center(current.preview, 2)
 
-            if play_rect.collidepoint(pygame.mouse.get_pos()):
-                running = False
+    display_surface.blit(current.preview,selected_rect)
 
-    # Background
-    display_surface.blit(background, background_rect)
 
     # Blit icons
     for e in chars:
