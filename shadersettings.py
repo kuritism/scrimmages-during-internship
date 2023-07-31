@@ -1,0 +1,4 @@
+# simple settings
+VIRTUAL_RES = (800, 600)
+REAL_RES=(1920, 1080)
+FPS=60

@@ -11,6 +11,10 @@ from tinytag import TinyTag
 from hollow import textOutline
 from grayfunc import greyscale
 
+from crt_shader import Graphic_engine
+from shadersettings import *
+from pygame.locals import *
+
 exec(open('selection.py').read())
 #from selection import char_select
 #char_select = ["emu", "bingo"]
@@ -24,12 +28,20 @@ font.init()
 display_info = pygame.display.Info()
 WINDOW_WIDTH = display_info.current_w
 WINDOW_HEIGHT = display_info.current_h
-display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), )
+#display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), DOUBLEBUF|OPENGL)
+display_surface = pygame.display.set_mode((1280, 720), DOUBLEBUF|OPENGL)
 pygame.display.set_caption("Scrimmage During Internship")
 
 FPS = 60
 clock = pygame.time.Clock()
 paused = False
+
+display_surface = pygame.Surface(VIRTUAL_RES).convert((255, 65282, 16711681, 0))
+#display_surface = pygame.Surface(VIRTUAL_RES).convert((255, 65282, 16711681, 0))
+# you need to give your display OPENGL flag to blit screen using OPENGL
+
+# init shader class
+crt_shader =  Graphic_engine(display_surface)
 
 #restart_death = True
 '''video_loop = 0
@@ -81,7 +93,7 @@ class Game():
         if player_1.health < 1:
             try:
                 #video(death, (160, 160), player_1.rect,"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
-                if self.restart_death:
+                if self.restart_death == True:
                     deathvideo.restart()
                     self.restart_death = False
                 deathvideo.draw(display_surface, (player_1.rect), force_draw=False)
@@ -99,7 +111,7 @@ class Game():
         if player_2.health < 1:
             try:
                 #video(death, (160, 160), player_2.rect,"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
-                if self.restart_death:
+                if self.restart_death == True:
                     deathvideo.restart()
                     self.restart_death = False
                 deathvideo.draw(display_surface, (player_2.rect), force_draw=False)
@@ -431,13 +443,11 @@ while running:
             #print(player_1.is_atkcooldown)
             player_2.takeDamage(player_1.atk_type)
 
-
         if event.type == player_2.P2_ATTACKCOOLDOWN:
             player_2.is_atkcooldown = False
             player_2.deal_damage = False
             pygame.time.set_timer(player_2.P2_ATTACKCOOLDOWN, 0)
             print('P2 Basic cooldown is up')
-
         if player_2.deal_damage == True:
             player_2.deal_damage = False
             #print(player_2.is_atkcooldown)
@@ -509,7 +519,8 @@ while running:
     my_game.update(my_game)
 
     # Update the display and tick clock
-    pygame.display.update()
+    #pygame.display.update()
+    crt_shader()
     clock.tick(FPS)
 
 # End the game
