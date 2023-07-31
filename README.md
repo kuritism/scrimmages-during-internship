@@ -7,7 +7,7 @@ edit tbh ultimate video
 use socket for multiplayer !!!!  
 
 https://github.com/ree1261/pyvidplayer
-
+https://github.com/JingShing-Python/ModernGL-Shader-with-pygame
 
 # Development Prospects
 holding off: ultimate video, bg video, animations(~~Attack~~, ability, ultimate, ~~death~~, taking damage)  
