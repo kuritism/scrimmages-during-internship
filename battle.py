@@ -493,7 +493,7 @@ while running:
     #ICON
     iconcoord = (80,80)
     P1iconRect = (pygame.transform.scale(player_1.playericon, (iconcoord)).get_rect())
-    P2iconRect = (pygame.transform.scale(player_1.playericon, (iconcoord)).get_rect())
+    P2iconRect = (pygame.transform.scale(player_2.playericon, (iconcoord)).get_rect())
     P1iconRect.topleft = ((WINDOW_WIDTH/200),WINDOW_HEIGHT/26.5)
     P2iconRect.topright = (WINDOW_WIDTH-(WINDOW_WIDTH/200),WINDOW_HEIGHT/26.5)
 
