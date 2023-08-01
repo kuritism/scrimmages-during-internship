@@ -53,6 +53,7 @@ while running:
                 exec(open('battle.py').read())
             elif settings_rect.collidepoint(mouse_x, mouse_y):
                 print('settings')
+                exec(open('Extras/sisyphus simulator.py').read())
             elif creditz_rect.collidepoint(mouse_x, mouse_y):
                 print('credirz')
 

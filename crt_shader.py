@@ -3,6 +3,7 @@ import pygame, os, sys
 from pygame.locals import *
 
 import moderngl
+from shadersettings import VIRTUAL_RES, REAL_RES
 
 
 def resource_path(relative):
@@ -14,7 +15,7 @@ def resource_path(relative):
 
 
 class Graphic_engine:
-    def __init__(self, screen, style=1, VIRTUAL_RES=(800, 600), cpu_only=False, fullscreen=False):
+    def __init__(self, screen, style=1, VIRTUAL_RES=VIRTUAL_RES, cpu_only=False, fullscreen=False):
         pygame.init()
         self.VIRTUAL_RES = VIRTUAL_RES
         self.cpu_only = cpu_only

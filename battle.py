@@ -28,8 +28,9 @@ font.init()
 display_info = pygame.display.Info()
 WINDOW_WIDTH = display_info.current_w
 WINDOW_HEIGHT = display_info.current_h
-#display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), DOUBLEBUF|OPENGL)
-display_surface = pygame.display.set_mode((1280, 720), DOUBLEBUF|OPENGL)
+DETECTED_RES = (WINDOW_WIDTH,WINDOW_HEIGHT)
+display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), DOUBLEBUF|OPENGL)
+#display_surface = pygame.display.set_mode((1920, 1080), DOUBLEBUF|OPENGL)
 pygame.display.set_caption("Scrimmage During Internship")
 
 FPS = 60
@@ -82,7 +83,7 @@ class Game():
 
     def update(self):
         """Update the game object"""
-        global P1_death, P2_death
+        #global P1_death, P2_death
 
         self.frame_count += 1
         if self.frame_count == FPS:
@@ -92,35 +93,37 @@ class Game():
         # Update
         if player_1.health < 1:
             try:
-                #video(death, (160, 160), player_1.rect,"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
+                video(death, (160, 160), player_1.rect,"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
                 if self.restart_death == True:
                     deathvideo.restart()
                     self.restart_death = False
                 deathvideo.draw(display_surface, (player_1.rect), force_draw=False)
-                P1_death = greyscale(player_1.playericon)
-                display_surface.blit(pygame.transform.scale(P1_death, (iconcoord)), P1iconRect)
+                #P1_death = greyscale(player_1.playericon)
+                #display_surface.blit(pygame.transform.scale(P1_death, (iconcoord)), P1iconRect)
                 # print('p1 dead')
                 player_1.kill()
 
-
             except AttributeError:
                 deathvideo.close()
-                display_surface.blit(pygame.transform.scale(P1_death, (iconcoord)), P1iconRect)
+                #print(pygame.transform.scale(P1_death, (iconcoord)))
+                #display_surface.blit(pygame.transform.scale(P1_death, (iconcoord)), P1iconRect)
                 my_game.start_new_round(my_game)
                 print('done')
+
         if player_2.health < 1:
             try:
-                #video(death, (160, 160), player_2.rect,"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
+                video(death, (160, 160), player_2.rect,"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
                 if self.restart_death == True:
                     deathvideo.restart()
                     self.restart_death = False
                 deathvideo.draw(display_surface, (player_2.rect), force_draw=False)
-                P2_death = greyscale(player_2.playericon)
-                display_surface.blit(pygame.transform.scale(P2_death, (iconcoord)), P2iconRect)
+                #P2_death = greyscale(player_2.playericon)
+                #display_surface.blit(pygame.transform.scale(P2_death, (iconcoord)), P2iconRect)
                 # print('p2 dead')
                 player_2.kill()
 
             except AttributeError:
+                deathvideo.close()
                 #display_surface.blit(pygame.transform.scale(P2_death, (iconcoord)), P2iconRect)
                 my_game.start_new_round(my_game)
                 print('done')
