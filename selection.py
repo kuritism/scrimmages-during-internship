@@ -109,7 +109,6 @@ while running:
                     pygame.display.update()
                 else:
                     # Hovering
-                    print('hover')
                     selected = pygame.transform.scale(pygame.image.load(f'Characters/{e.chara}/sprites/{e.chara}_Icon.png'),
                                                       (240, 240))
                     current = e

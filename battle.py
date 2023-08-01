@@ -29,8 +29,8 @@ display_info = pygame.display.Info()
 WINDOW_WIDTH = display_info.current_w
 WINDOW_HEIGHT = display_info.current_h
 DETECTED_RES = (WINDOW_WIDTH,WINDOW_HEIGHT)
-display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), DOUBLEBUF|OPENGL)
-#display_surface = pygame.display.set_mode((1920, 1080), DOUBLEBUF|OPENGL)
+#display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), DOUBLEBUF|OPENGL)
+display_surface = pygame.display.set_mode((1920, 1080), DOUBLEBUF|OPENGL)
 pygame.display.set_caption("Scrimmage During Internship")
 
 FPS = 60
@@ -93,14 +93,15 @@ class Game():
         # Update
         if player_1.health < 1:
             try:
-                video(death, (160, 160), player_1.rect,"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
-                if self.restart_death == True:
+                #Video(death, (160, 160), player_1.rect,"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
+                deathvideo = Video("Assets/death.mp4")
+                '''if self.restart_death == True:
                     deathvideo.restart()
-                    self.restart_death = False
+                    self.restart_death = False'''
                 deathvideo.draw(display_surface, (player_1.rect), force_draw=False)
                 #P1_death = greyscale(player_1.playericon)
                 #display_surface.blit(pygame.transform.scale(P1_death, (iconcoord)), P1iconRect)
-                # print('p1 dead')
+                print('p1 dead')
                 player_1.kill()
 
             except AttributeError:
@@ -112,14 +113,16 @@ class Game():
 
         if player_2.health < 1:
             try:
-                video(death, (160, 160), player_2.rect,"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
-                if self.restart_death == True:
+                #Video(death, (160, 160), player_2.rect,"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
+                deathvideo = Video("Assets/death.mp4")
+
+                '''if self.restart_death == True:
                     deathvideo.restart()
-                    self.restart_death = False
+                    self.restart_death = False'''
                 deathvideo.draw(display_surface, (player_2.rect), force_draw=False)
                 #P2_death = greyscale(player_2.playericon)
                 #display_surface.blit(pygame.transform.scale(P2_death, (iconcoord)), P2iconRect)
-                # print('p2 dead')
+                print('p2 dead')
                 player_2.kill()
 
             except AttributeError:
@@ -132,8 +135,8 @@ class Game():
 
         if player_1.try_ult == True:
             try:
-                print("p1: " + str(player_1.try_ult))
-                print("p2:⠀" + str(player_2.try_ult))
+                #print("p1: " + str(player_1.try_ult))
+                #print("p2:⠀" + str(player_2.try_ult))
                 player_1.ultvideo.draw(display_surface, (0,0), force_draw=False)
                 #video(P1ultimatevideo, (WINDOW_WIDTH,WINDOW_HEIGHT),(0,0),"Characters/" + player_1.character + "/videos/" + player_1.character + "_Ultimate_Video.mp4")
 
@@ -151,8 +154,8 @@ class Game():
 
         if player_2.try_ult == True:
             try:
-                print("p1: " + str(player_1.try_ult))
-                print("p2: " + str(player_2.try_ult))
+                #print("p1: " + str(player_1.try_ult))
+                #print("p2: " + str(player_2.try_ult))
                 player_2.ultvideo.draw(display_surface, (0,0), force_draw=False)
                 #video(P2ultimatevideo, (WINDOW_WIDTH, WINDOW_HEIGHT),(0,0),"Characters/" + player_2.character + "/videos/" + player_2.character + "_Ultimate_Video.mp4")
 
@@ -386,7 +389,7 @@ class arena():
 
 # Pick background
 bg = cv2.VideoCapture("Assets/Backgrounds/" + str(random.randint(2, 2)) + ".mp4")
-deathvideo = Video("Assets/death.mp4")
+death = Video("Assets/death.mp4")
 #success, bg_image = bg.read()
 #success, death_image = death.read()
 #success, player1.ultimate_image = player1.ultimate_video.read()
@@ -502,7 +505,7 @@ while running:
 
     # Play Background
     #video(bg, (WINDOW_WIDTH, WINDOW_HEIGHT), (0,0),"Assets/Backgrounds/" + str(random.randint(3, 3)) + ".mp4")
-    display_surface.fill("purple")
+    #display_surface.fill("purple")
 
     # Blit background
     display_surface.blit(pygame.transform.scale(player_1.healthbar,(249*2,66*2)), P1healthbarRect)

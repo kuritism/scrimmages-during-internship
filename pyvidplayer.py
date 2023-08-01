@@ -20,9 +20,10 @@ class Video:
         
         info = MediaInfo.parse(path).video_tracks[0]
         
+        #self.frame_rate = float(info.frame_rate)
         self.frame_rate = float(info.frame_rate)
         self.frame_count = int(info.frame_count)
-        self.frame_delay = 1 / self.frame_rate
+        self.frame_delay = 1 / (self.frame_rate*10)
         self.duration = info.duration / 1000
         self.original_size = (info.width, info.height)
         self.current_size = self.original_size
