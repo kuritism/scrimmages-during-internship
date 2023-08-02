@@ -75,7 +75,7 @@ while running:
             sisplayer.is_travel = False
             pygame.time.set_timer(sisplayer.counter_timer, 0)
 
-        elif event.type == pygame.KEYUP:
+        elif event.type == pygame.KEYUP and sisplayer.distance > -6:
             sisplayer.distance = -6
             print(sisplayer.distance)
         if event.type == sisplayer.randomevent_timer and random.randint(1,1) == 1:
