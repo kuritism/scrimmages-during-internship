@@ -2,6 +2,7 @@
 # Imports
 import pygame
 import ctypes
+import webbrowser
 from itertools import cycle
 
 # Initialize
@@ -56,6 +57,7 @@ while running:
                 exec(open('Extras/sisyphus simulator.py').read())
             elif creditz_rect.collidepoint(mouse_x, mouse_y):
                 print('credirz')
+                webbrowser.open_new("https://github.com/kuritism/scrimmages-during-internship/blob/main/credits.md")
 
     # Blit
     display_surface.blit(background, background_rect)

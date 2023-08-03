@@ -105,11 +105,11 @@ class Game():
                 player_1.kill()
 
             except AttributeError:
+                print('done')
                 deathvideo.close()
                 #print(pygame.transform.scale(P1_death, (iconcoord)))
                 #display_surface.blit(pygame.transform.scale(P1_death, (iconcoord)), P1iconRect)
-                my_game.start_new_round(my_game)
-                print('done')
+                #my_game.start_new_round(my_game)
 
         if player_2.health < 1:
             try:
@@ -126,10 +126,10 @@ class Game():
                 player_2.kill()
 
             except AttributeError:
+                print('done')
                 deathvideo.close()
                 #display_surface.blit(pygame.transform.scale(P2_death, (iconcoord)), P2iconRect)
-                my_game.start_new_round(my_game)
-                print('done')
+                #my_game.start_new_round(my_game)
 
 
 
