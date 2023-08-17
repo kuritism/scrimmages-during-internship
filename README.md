@@ -6,6 +6,7 @@ https://code-with-me.global.jetbrains.com/gI2CMnG2YlLScqa2bcMeFw#p=PC&fp=F25CEDC
 # TO DO
 edit tbh ultimate video 
 use socket for multiplayer !!!!  
+secret settings: add trumpet sound effect to Everything Ever (or snare drum/splash cymbal)  
 
 https://github.com/ree1261/pyvidplayer
 https://github.com/JingShing-Python/ModernGL-Shader-with-pygame
